@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/sheet";
 
 export default function CartSheet() {
-  const items  = []
-  const totalPrice = 0;
+//   const totalPrice = 0;
 
   return (
     <Sheet>
@@ -32,7 +31,7 @@ export default function CartSheet() {
           </SheetTitle>
         </SheetHeader>
 
-        {items.length === 0 ? (
+        {/* {items.length === 0 ? ( */}
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <ShoppingCart className="w-12 h-12 text-muted-foreground mb-4" />
             <p className="text-muted-foreground">Your cart is empty</p>
@@ -40,7 +39,7 @@ export default function CartSheet() {
               Add items from the menu to get started
             </p>
           </div>
-        ) : (
+        {/* ) : (
           <>
             <div className="flex-1 overflow-y-auto py-6">
               <div className="space-y-6">
@@ -101,7 +100,7 @@ export default function CartSheet() {
               </Button>
             </div>
           </>
-        )}
+        )} */}
       </SheetContent>
     </Sheet>
   );

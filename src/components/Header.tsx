@@ -6,6 +6,7 @@ import { Menu, X, Search } from "lucide-react";
 import Image from "next/image";
 import CartSheet from "./CartSheet";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -91,14 +92,14 @@ export default function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <div className="flex items-center gap-2 border-b border-foreground">
+          <div className="flex items-center gap-2 border border-primary rounded-3xl px-3 py-1">
             <Search className="w-4 h-4 text-muted-foreground" />
-            <input
+            <Input
               type="text"
               placeholder="Search menu..."
               value={searchQuery}
               onChange={handleChange}
-              className="bg-transparent border-none outline-none text-sm py-1 w-48 placeholder:text-muted-foreground"
+              className="bg-transparent border-none outline-none text-sm py-1 w-35 placeholder:text-muted-foreground"
               autoFocus
             />
             <button
