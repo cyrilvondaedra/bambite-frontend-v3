@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import PhilosophySection from "@/components/PhilosophySection";
 import { CartProvider } from "@/components/CartContext";
 import MenuSection from "@/components/MenuSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 import { Suspense } from "react";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
         <HeroSection />
         <PhilosophySection />
         <MenuSection />
+        <TestimonialsSection />
       </main>
     </CartProvider>
   );

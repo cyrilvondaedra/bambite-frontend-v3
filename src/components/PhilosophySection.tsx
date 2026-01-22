@@ -36,7 +36,7 @@ export default function PhilosophySection() {
               src="/noodleMenu.jpg"
               alt="Beautifully plated dish"
               fill
-              className="object-cover"
+              className="object-cover rounded-xl"
             />
           </div>
         </div>
