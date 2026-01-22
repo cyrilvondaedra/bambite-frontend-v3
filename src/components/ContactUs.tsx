@@ -7,7 +7,7 @@ export default function ContactUs() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="relative aspect-4/3 lg:aspect-4/5">
             <Image
-              src="/images/interior.jpg"
+              src="/forcontact.jpg"
               alt="Restaurant interior"
               fill
               className="object-cover"
@@ -19,11 +19,13 @@ export default function ContactUs() {
               Contact
             </p>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-light mb-8">
-              Reserve your experience
+              Reach us here
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-10">
-              Join us for an unforgettable culinary journey. We recommend
-              booking at least two weeks in advance for weekend evenings.
+              We&apos;re Here for You. Questions about our products, locations,
+              or collaborations? Send us a message and our support team — guided
+              by smart tech and warm hearts — will respond shortly. The future
+              of flavour starts with a conversation.
             </p>
 
             <form className="space-y-6">
