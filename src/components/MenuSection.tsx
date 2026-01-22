@@ -126,7 +126,9 @@ export default function MenuSection() {
                   src={item.imageUrls[0]}
                   alt={item.name}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  priority
                 />
               </div>
               <div className="flex flex-col flex-1 p-2">
