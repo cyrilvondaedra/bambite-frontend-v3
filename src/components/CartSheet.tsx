@@ -1,8 +1,7 @@
 "use client";
 
-import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "./CartContext";
 import {
   Sheet,
   SheetContent,
@@ -12,8 +11,10 @@ import {
 } from "@/components/ui/sheet";
 
 export default function CartSheet() {
-//   const totalPrice = 0;
-
+  //   const totalPrice = 0;
+  const { items, totalItems, totalPrice, updateQuantity, removeItem } =
+    useCart();
+    
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -22,6 +23,11 @@ export default function CartSheet() {
           aria-label="Open cart"
         >
           <ShoppingCart className="w-5 h-5" />
+          {totalItems > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-(--color-primary) text-(--color-primary-foreground) text-xs flex items-center justify-center rounded-full">
+              {totalItems}
+            </span>
+          )}
         </button>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md flex flex-col">
@@ -32,13 +38,13 @@ export default function CartSheet() {
         </SheetHeader>
 
         {/* {items.length === 0 ? ( */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <ShoppingCart className="w-12 h-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">Your cart is empty</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Add items from the menu to get started
-            </p>
-          </div>
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <ShoppingCart className="w-12 h-12 text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">Your cart is empty</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Add items from the menu to get started
+          </p>
+        </div>
         {/* ) : (
           <>
             <div className="flex-1 overflow-y-auto py-6">
