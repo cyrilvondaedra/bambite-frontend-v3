@@ -66,7 +66,7 @@ export default function Header() {
             Home
           </Link>
           <Link
-            href="#about_us"
+            href="#about"
             className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
           >
             About Us
