@@ -1,5 +1,5 @@
 "use client";
-
+import { Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartContext";
@@ -42,11 +42,12 @@ const socials = [
   },
 ];
 export default function Checkout() {
-
   return (
     <CartProvider>
       <main className="h-full bg-background">
-        <Header />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+        </Suspense>
 
         {/* Hero */}
         <section className="pt-32 pb-12 bg-(--color-background) text-(--color-text)">
@@ -62,7 +63,12 @@ export default function Checkout() {
                   size="lg"
                   className={`${social.color} w-100 rounded-xl mb-4 text-primary-foreground hover:${social.color}/90 py-2 text-sm`}
                 >
-                  <Link href={social.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                  <Link
+                    href={social.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center"
+                  >
                     <Image
                       src={social.icon}
                       alt={`${social.name} Logo`}

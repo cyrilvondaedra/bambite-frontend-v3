@@ -1,5 +1,5 @@
 "use client";
-
+import { Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartContext";
@@ -62,8 +62,9 @@ export default function ContactUs() {
   return (
     <CartProvider>
       <main className="h-full bg-background">
-        <Header />
-
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+        </Suspense>
         <section
           id="contact_us"
           className="py-24 md:py-32 px-6 md:px-12 lg:px-20"
