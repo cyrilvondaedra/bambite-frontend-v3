@@ -41,7 +41,7 @@ const socials = [
     height: 15,
   },
 ];
-export default function MenuPage() {
+export default function Checkout() {
 
   return (
     <CartProvider>

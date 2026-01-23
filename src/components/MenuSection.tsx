@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
-import { useCart } from "./CartContext";
 import { useEffect, useState } from "react";
 import { MenuItem } from "@/types/api/menuItem";
 import QuantityControls from "@/components/QualityControls";
@@ -77,7 +75,7 @@ export default function MenuSection() {
 
         <div className="text-center mt-16">
           <a
-            href="/Menu"
+            href="/menu"
             className="inline-block px-8 py-3 bg-(--color-primary-foreground) text-(--color-primary) text-sm tracking-wider uppercase hover:bg-(--color-primary) hover:text-(--color-primary-foreground) hover:border hover:border-(--color-primary-foreground) rounded-4xl transition-all duration-300"
           >
             View Full Menu

@@ -72,13 +72,13 @@ export default function Header() {
             About Us
           </Link>
           <Link
-            href="#menu"
+            href="/menu"
             className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
           >
             Menu
           </Link>
           <Link
-            href="#contact_us"
+            href="/contact_us"
             className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
           >
             Contact Us
