@@ -25,7 +25,6 @@ export default function CartSheet() {
   } = useCart();
 
   const router = useRouter();
-  console.log(open);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -126,7 +125,7 @@ export default function CartSheet() {
                 </span>
               </div>
               <Button
-                onClick={() => router.push("/checkout")}
+                onClick={() => router.push("/Checkout")}
                 className="w-full bg-primary rounded-xl mb-4 text-primary-foreground hover:bg-primary/90 py-6 text-sm tracking-wider uppercase"
               >
                 Proceed to Checkout
