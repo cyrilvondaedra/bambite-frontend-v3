@@ -1,106 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useEffect, useState } from "react";
 import { MenuItem } from "@/types/api/menuItem";
-
-function QuantityControls({ item }: { item: MenuItem }) {
-  const { items, addItem, updateQuantity } = useCart();
-  const cartItem = items.find((i) => i.id === item.id);
-  const quantity = cartItem?.quantity || 0;
-
-  const handleAdd = () => {
-    addItem({
-      id: item.id,
-      title: item.name,
-      description: item.description,
-      price: item.price,
-      image: item.imageUrls[0],
-    });
-  };
-
-  const handleDecrease = () => {
-    if (quantity > 0) {
-      updateQuantity(item.id, quantity - 1);
-    }
-  };
-
-  const handleIncrease = () => {
-    if (quantity === 0) {
-      handleAdd();
-    } else {
-      updateQuantity(item.id, quantity + 1);
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-3">
-      {quantity === 0 ? (
-        <button
-          onClick={handleAdd}
-          className="flex items-center text-xs gap-2 p-2 bg-transparent text-(--color-primary) border border-(--color-primary) rounded-3xl tracking-wider hover:bg-(--color-accent) transition-colors"
-          aria-label={`Add ${item.name} to cart`}
-        >
-          <ShoppingCart className="w-4 h-4" />
-          Add To Cart
-        </button>
-      ) : (
-        <div className="flex items-center gap-1">
-          {/* <button
-            onClick={handleDecrease}
-            className="w-9 h-9 flex items-center justify-center hover:bg-secondary transition-colors"
-            aria-label="Decrease quantity"
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-          <span className="w-8 text-center text-sm font-medium">{quantity}</span>
-          <button
-            onClick={handleIncrease}
-            className="w-9 h-9 flex items-center justify-center hover:bg-secondary transition-colors"
-            aria-label="Increase quantity"
-          >
-            <Plus className="w-4 h-4" />
-          </button> */}
-          <button
-            onClick={handleAdd}
-            className="flex items-center gap-2 p-2 bg-transparent text-(--color-primary) border border-(--color-primary) hover:border hover:bg-(--color-accent) rounded-3xl text-xs tracking-wider transition-colors"
-            aria-label={`Add ${item.name} to cart`}
-          >
-            {/* <ShoppingCart className="w-4 h-4" /> */}
-            View Cart
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
+import QuantityControls from "@/components/QualityControls";  
 
 export default function MenuSection() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     const fetchMenuItems = async () => {
-      let allMenuItems: MenuItem[] = [];
-      if (selectedCategory === "all") {
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_BASE_URL + "/products?page=1&limit=4",
-        );
-        const data = await response.json();
-        allMenuItems = data.data;
-        setMenuItems(allMenuItems);
-      } 
-      else {
-        const filteredItems = allMenuItems.filter(
-          (item) => item.category.id === selectedCategory,
-        );
-        setMenuItems(filteredItems);
-      }
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_BASE_URL + "/products?page=1&limit=4",
+      );
+      const data = await response.json();
+      setMenuItems(data.data);
     };
     fetchMenuItems();
-  }, [selectedCategory]);
+  }, []);
 
   return (
     <section
@@ -154,7 +73,7 @@ export default function MenuSection() {
 
         <div className="text-center mt-16">
           <a
-            href="#reserve"
+            href="/Menu"
             className="inline-block px-8 py-3 bg-(--color-primary-foreground) text-(--color-primary) text-sm tracking-wider uppercase hover:bg-(--color-primary) hover:text-(--color-primary-foreground) hover:border hover:border-(--color-primary-foreground) rounded-4xl transition-all duration-300"
           >
             View Full Menu
