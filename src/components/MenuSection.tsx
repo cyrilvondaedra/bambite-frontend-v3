@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { MenuItem } from "@/types/api/menuItem";
 import QuantityControls from "@/components/QualityControls";
+import Link from "next/link";
 
 export default function MenuSection() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -39,7 +40,10 @@ export default function MenuSection() {
                 key={item.id}
                 className="group flex flex-col h-full bg-(--color-background) p-1 rounded-md"
               >
-                <div className="relative aspect-square overflow-hidden mb-2">
+                <Link
+                  href={`/menu/${item.id}`}
+                  className="relative aspect-square overflow-hidden mb-2"
+                >
                   <Image
                     src={item.imageUrls[0]}
                     alt={item.name}
@@ -48,12 +52,15 @@ export default function MenuSection() {
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     priority
                   />
-                </div>
+                </Link>
                 <div className="flex flex-col flex-1 p-2">
                   <div className="flex-1">
-                    <h3 className="font-serif text-xl mb-2 text-(--color-title)">
+                    <Link
+                      href={`/menu/${item.id}`}
+                      className="font-serif text-xl mb-2 text-(--color-title)"
+                    >
                       {item.name}
-                    </h3>
+                    </Link>
                     <p className="font-serif text-sm mb-2 text-(--color-title)">
                       {item.thaiName}
                     </p>

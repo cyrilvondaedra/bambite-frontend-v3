@@ -109,12 +109,11 @@ export default function ContactUs() {
                 className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
                 required
               >
-                <option value="">Reason of contact</option>
-                <option value="General Inquiry">General Inquiry</option>
-                <option value="Product Question">Product Question</option>
-                <option value="Collaboration">Collaboration</option>
-                <option value="Feedback">Feedback</option>
-                <option value="Others">Others</option>
+                <option value="general_inquiry">General Inquiry</option>
+                <option value="product_question">Product Question</option>
+                <option value="collaboration">Collaboration</option>
+                <option value="feedback">Feedback</option>
+                <option value="other">Other</option>
               </select>
 
               <textarea
