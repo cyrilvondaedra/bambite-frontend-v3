@@ -144,7 +144,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
             <div className="flex items-center gap-4 mb-8">
               <div className="flex items-center gap-2">
                 <button
-                  className="p-1 border border-border rounded-lg bg-(--color-accent) text-(--color-text) hover:bg-(--color-accent/80) transition-colors"
+                  className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
                   aria-label="Decrease quantity"
                   onClick={() => decreaseQuantity(menuItem.id)}
                 >
@@ -152,7 +152,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                 </button>
                 <span className="w-6 text-center text-sm">{quantity}</span>
                 <button
-                  className="p-1 border border-border rounded-lg bg-(--color-accent) text-(--color-text) hover:bg-(--color-accent/80) transition-colors"
+                  className="p-1 rounded-lg  border border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
                   aria-label="Increase quantity"
                   onClick={() => increaseQuantity(menuItem.id)}
                 >
@@ -182,9 +182,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                 <AccordionTrigger className="text-xl hover:no-underline">
                   What are your Ingredients?
                 </AccordionTrigger>
-                <AccordionContent >
-                 {menuItem.ingredients}
-                </AccordionContent>
+                <AccordionContent>{menuItem.ingredients}</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

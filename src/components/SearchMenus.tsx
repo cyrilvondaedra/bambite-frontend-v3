@@ -1,40 +1,20 @@
 "use client";
-
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { MenuItem } from "@/types/api/menuItem";
 import QuantityControls from "@/components/QualityControls";
+import Link from "next/link";
+import { MenuItem } from "@/types/api/menuItem";
 
-export default function MenuSection() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+interface SearchMenusProps {
+  SearchMenus: MenuItem[];
+}
 
-  useEffect(() => {
-    const fetchMenuItems = async () => {
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_BASE_URL + "/products?page=1&limit=4",
-      );
-      const data = await response.json();
-      setMenuItems(data.data);
-    };
-    fetchMenuItems();
-  }, []);
-
+export default function SearchMenus({ SearchMenus }: SearchMenusProps) {
   return (
-    <section
-      id="menu"
-      className="py-24 bg-(--color-primary) text-(--color-primary-foreground) md:py-32 px-6 md:px-12 lg:px-20"
-    >
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="font-serif text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-4">
-            BamBite Menu
-          </p>
-          <h2 className="font-serif text-xl">All the best in one place</h2>
-        </div>
-
+    <section className="py-12 md:py-16">
+      <div className="container mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8">
-          {menuItems.length > 0 &&
-            menuItems.map((item) => (
+          {SearchMenus.length > 0 ? (
+            SearchMenus.map((item) => (
               <div
                 key={item.id}
                 className="group flex flex-col h-full bg-(--color-background) p-1 rounded-md"
@@ -71,16 +51,14 @@ export default function MenuSection() {
                   </div>
                 </div>
               </div>
-            ))}
-        </div>
-
-        <div className="text-center mt-16">
-          <a
-            href="/menus"
-            className="inline-block px-8 py-3 bg-(--color-primary-foreground) text-(--color-primary) text-sm tracking-wider uppercase hover:bg-(--color-primary) hover:text-(--color-primary-foreground) hover:border hover:border-(--color-primary-foreground) rounded-4xl transition-all duration-300"
-          >
-            View Full Menu
-          </a>
+            ))
+          ) : (
+            <div className="col-span-full flex items-center justify-center">
+              <p className="text-center text-muted-foreground text-lg">
+                No search results found.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>

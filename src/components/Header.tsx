@@ -24,20 +24,16 @@ export default function Header() {
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
       params.set("q", value);
-    } else {
-      params.delete("q");
     }
-
-    router.replace(`?${params.toString()}`);
   };
 
   const handleRemove = () => {
     setSearchQuery("");
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("q");
+    // const params = new URLSearchParams(searchParams.toString());
+    // params.delete("q");
 
-    router.replace(`?${params.toString()}`);
+    // router.replace(`?${params.toString()}`);
   };
 
   return (
@@ -61,38 +57,38 @@ export default function Header() {
         <div className="hidden xl:flex items-center gap-12">
           <Link
             href="/"
-            className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+            className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
           >
             Home
           </Link>
           <Link
             href="/about_us"
-            className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+            className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary)transition-colors"
           >
             About Us
           </Link>
           <Link
             href="/menus"
-            className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+            className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
           >
             Menu
           </Link>
           <Link
             href="/contact_us"
-            className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+            className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
           >
             Contact Us
           </Link>
           <Link
             href="#career"
-            className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+            className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
           >
             Career
           </Link>
         </div>
 
         <div className="hidden xl:flex items-center gap-4">
-          <div className="flex items-center gap-2 border border-primary rounded-3xl px-3 py-1">
+          <div className="flex items-center gap-2 border border-(--color-primary) rounded-3xl px-3 py-1">
             <Search className="w-4 h-4 text-muted-foreground" />
             <Input
               type="text"
@@ -102,8 +98,9 @@ export default function Header() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-
-                  if (!searchQuery.trim()) return;
+                  const trimmed = searchQuery.trim();
+                  if (!trimmed) return;
+                  router.push(`/search?q=${encodeURIComponent(trimmed)}`);
                 }
               }}
               className="bg-transparent border-none outline-none text-sm py-1 w-35 placeholder:text-muted-foreground"
@@ -156,7 +153,7 @@ export default function Header() {
       {/* Mobile Search Bar */}
       {isSearchOpen && (
         <div className="xl:hidden px-6 pb-4">
-          <div className="flex items-center gap-2 border border-primary rounded-3xl px-3 py-1">
+          <div className="flex items-center gap-2 border border-(--color-primary) rounded-3xl px-3 py-1">
             <Search className="w-4 h-4 text-muted-foreground" />
             <input
               type="text"
@@ -166,8 +163,9 @@ export default function Header() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-
-                  if (!searchQuery.trim()) return;
+                  const trimmed = searchQuery.trim();
+                  if (!trimmed) return;
+                  router.push(`/search?q=${encodeURIComponent(trimmed)}`);
                 }
               }}
               className="bg-transparent rounded-3xl border-none outline-none text-sm py-2 flex-1 placeholder:text-muted-foreground"
@@ -191,35 +189,35 @@ export default function Header() {
           <div className="flex flex-col px-6 py-4 gap-4">
             <Link
               href="/"
-              className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link
               href="/about_us"
-              className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               About Us
             </Link>
             <Link
               href="/menus"
-              className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Menu
             </Link>
             <Link
               href="/contact_us"
-              className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact Us
             </Link>
             <Link
               href="/career"
-              className="text-sm tracking-wide text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm tracking-wide text-muted-foreground hover:text-(--color-primary) transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Career

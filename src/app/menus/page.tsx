@@ -68,7 +68,7 @@ export default function MenuPage() {
                 onClick={() => setActiveCategory("all")}
                 className={`px-4 py-2 md:px-6 md:py-3 font-serif text-sm md:text-base transition-all duration-300 border-b-2 ${
                   activeCategory === "all"
-                    ? "border-foreground text-foreground"
+                    ? "border-(--color-primary) text-foreground"
                     : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"
                 }`}
               >
@@ -82,7 +82,7 @@ export default function MenuPage() {
                     className={`px-4 py-2 md:px-6 md:py-3 font-serif text-sm md:text-base transition-all duration-300 border-b-2 ${
                       activeCategory === category.id
                         ? "border-foreground text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground"
+                        : "border-transparent text-muted-foreground hover:text-(--color-primary) hover:border-(--color-primary)"
                     }`}
                   >
                     {category.name}
@@ -116,12 +116,14 @@ export default function MenuPage() {
                 {!loading &&
                   menuItems.length > 0 &&
                   menuItems.map((item) => (
-                    <Link
-                      href={`/menu/${item.id}`}
+                    <div
                       key={item.id}
                       className="group cursor-pointer flex flex-col h-full bg-(--color-background) p-1 rounded-md"
                     >
-                      <div className="relative aspect-square overflow-hidden mb-2">
+                      <Link
+                        href={`/menu/${item.id}`}
+                        className="relative aspect-square overflow-hidden mb-2"
+                      >
                         <Image
                           src={item.imageUrls[0]}
                           alt={item.name}
@@ -130,13 +132,16 @@ export default function MenuPage() {
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                           priority
                         />
-                      </div>
+                      </Link>
 
                       <div className="flex flex-col flex-1 p-2">
                         <div className="flex-1">
-                          <h3 className="font-serif text-xl mb-2 text-(--color-title)">
+                          <Link
+                            href={`/menu/${item.id}`}
+                            className="font-serif text-xl mb-2 text-(--color-title)"
+                          >
                             {item.name}
-                          </h3>
+                          </Link>
                           <p className="font-serif text-sm mb-2 text-(--color-title)">
                             {item.thaiName}
                           </p>
@@ -154,7 +159,7 @@ export default function MenuPage() {
                           </div>
                         </div>
                       </div>
-                    </Link>
+                    </div>
                   ))}
               </div>
             </div>

@@ -1,11 +1,13 @@
-export async function fetchMenuItem(id: string) {
+export async function fetchMenuItem(id: string | null, params: string) {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/products/${id}`,
-      {
-        cache: "no-store",
-      },
-    );
+    const baseURL = `${process.env.NEXT_PUBLIC_BASE_URL}/products/`;
+    const url = `${id ? `${baseURL}${id}` : `${params ? `${baseURL}?search=${params}` : `${baseURL}`}`}`;
+
+    const response = await fetch(url, {
+      cache: "no-store",
+    });
+
+    console.log("r", response);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch menu item: ${response.statusText}`);

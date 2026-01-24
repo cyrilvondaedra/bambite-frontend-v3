@@ -90,7 +90,7 @@ export default function CartSheet() {
                       </button>
                       <div className="flex items-center gap-2">
                         <button
-                          className="p-1 border border-border rounded-lg bg-(--color-accent) text-(--color-text) hover:bg-(--color-accent/80) transition-colors"
+                          className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary) transition-colors"
                           aria-label="Decrease quantity"
                           onClick={() =>
                             updateQuantity(item.id, item.quantity - 1)
@@ -102,7 +102,7 @@ export default function CartSheet() {
                           {item.quantity}
                         </span>
                         <button
-                          className="p-1 border border-border rounded-lg bg-(--color-accent) text-(--color-text) hover:bg-(--color-accent/80) transition-colors"
+                          className="p-1 border rounded-lg  border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
                           aria-label="Increase quantity"
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)

@@ -11,11 +11,8 @@ export default async function MenuItemPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  console.log("mmsid", id);
 
-  const menuItem = await fetchMenuItem(id);
-
-  console.log("menuItem", menuItem);
+  const menuItem = await fetchMenuItem(id,"");
 
   return (
     <CartProvider>

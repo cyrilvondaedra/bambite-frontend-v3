@@ -29,7 +29,7 @@ export default function HeroSection() {
           </p>
           <a
             href="/menus"
-            className="inline-block mt-10 px-8 py-3 border border-primary hover:text-white text-background text-sm rounded-3xl tracking-wider uppercase hover:bg-primary transition-all duration-300"
+            className="inline-block mt-10 px-8 py-3 border border-(--color-primary) hover:text-white text-background text-sm rounded-3xl tracking-wider uppercase hover:bg-(--color-primary) transition-all duration-300"
           >
             Order Now
           </a>
