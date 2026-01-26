@@ -23,14 +23,14 @@ export default function MenuSection() {
   return (
     <section
       id="menu"
-      className="py-24 bg-(--color-primary) text-(--color-primary-foreground) md:py-32 px-6 md:px-12 lg:px-20"
+      className="py-24 bg-(--color-secondary) text-(--color-body) md:py-32 px-6 md:px-12 lg:px-20"
     >
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="font-serif text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-4">
+          <p className="font-serif text-4xl text-(--color-body) font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-4">
             BamBite Menu
           </p>
-          <h2 className="font-serif text-xl">All the best in one place</h2>
+          <h2 className="font-serif text-xl text-(--color-body)">All the best in one place</h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8">
@@ -57,20 +57,20 @@ export default function MenuSection() {
                   <div className="flex-1">
                     <Link
                       href={`/menu/${item.id}`}
-                      className="font-serif text-xl mb-2 text-(--color-title)"
+                      className="font-serif text-xl mb-2 text-(--color-header1)"
                     >
                       {item.name}
                     </Link>
-                    <p className="font-serif text-sm mb-2 text-(--color-title)">
+                    <p className="font-serif text-sm mb-2 text-(--color-header1)">
                       {item.thaiName}
                     </p>
-                    <p className="text-muted-foreground text-sm line-clamp-2">
+                    <p className="text-(--color-header1)text-sm line-clamp-2">
                       {item.description}
                     </p>
                   </div>
                   <div className="mt-4 text-(--color-title)">
                     <div className="flex flex-col sm:flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
-                      <span className="font-serif text-lg">{`฿${item.price}`}</span>
+                      <span className="font-serif text-lg text-(--color-header1)">{`฿${item.price}`}</span>
                       <div className="w-full md:w-auto">
                         <QuantityControls item={item} />
                       </div>
@@ -84,7 +84,7 @@ export default function MenuSection() {
         <div className="text-center mt-16">
           <a
             href="/menus"
-            className="inline-block px-8 py-3 bg-(--color-primary-foreground) text-(--color-primary) text-sm tracking-wider uppercase hover:bg-(--color-primary) hover:text-(--color-primary-foreground) hover:border hover:border-(--color-primary-foreground) rounded-4xl transition-all duration-300"
+            className="inline-block px-8 py-3 bg-(--color-header1) text-sm tracking-wider uppercase hover:bg-(--color-background) text-(--color-body) hover:text-(--color-header1) border border-(--color-body) hover:border-(--color-primary) rounded-4xl transition-all duration-300"
           >
             View Full Menu
           </a>

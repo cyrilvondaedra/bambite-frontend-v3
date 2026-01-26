@@ -9,7 +9,7 @@ export default function SearchHeroSection({ query }: { query: string }) {
       />
 
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl text-(--color-primary-foreground) mb-6 tracking-wide text-balance font-semibold">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl text-(--color-header2) mb-6 tracking-wide text-balance font-semibold">
           {`Search Results for: ${query}`}
         </h1>
       </div>

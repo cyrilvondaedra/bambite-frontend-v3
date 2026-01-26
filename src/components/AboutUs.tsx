@@ -2,11 +2,11 @@ import Image from "next/image";
 
 export default function AboutSection() {
   return (
-    <section className="bg-background py-20 md:py-32">
+    <section className="bg-(--color-background) py-20 md:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Section Label */}
         <div className="mb-6">
-          <span className="text-sm font-medium uppercase tracking-widest text-primary">
+          <span className="text-sm font-medium uppercase tracking-widest text-(--color-primary)">
             Our Story
           </span>
         </div>
@@ -15,11 +15,11 @@ export default function AboutSection() {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8">
-            <h2 className="font-serif text-4xl font-medium leading-tight text-foreground md:text-5xl lg:text-6xl text-balance">
+            <h2 className="font-serif text-4xl font-medium leading-tight text-(--color-header1) md:text-5xl lg:text-6xl text-balance">
               About Us
             </h2>
 
-            <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
+            <div className="space-y-6 text-lg leading-relaxed text-(--color-header2)">
               <p>
                 Hi, I&apos;m Bam. Welcome to my imaginative little world where
                 familiar flavors meet new ideas and every bite becomes a joyful
@@ -27,7 +27,7 @@ export default function AboutSection() {
               </p>
 
               <p>
-                <span className="font-semibold text-foreground">BamBite</span>{" "}
+                <span className="font-semibold text-(--color-primary)">BamBite</span>{" "}
                 is the way of connecting generations, cultures, and experiences
                 through food. Inspired by cuisines from across Asia, we explore
                 flavors, techniques, and dishes beyond the familiar with
@@ -40,7 +40,7 @@ export default function AboutSection() {
                 right at home.
               </p>
 
-              <p className="text-foreground font-medium italic border-l-4 border-primary pl-6">
+              <p className="text-(--color-header2) font-medium italic border-l-4 border-(--color-primary) pl-6">
                 &quot;At BamBite, every dish is an invitation to discover,
                 enjoy, and have fun through flavor.&quot;
               </p>
@@ -48,7 +48,7 @@ export default function AboutSection() {
 
             <a
               href="/about_us"
-              className="inline-block mt-10 px-8 py-3 bg-(--color-primary-foreground) text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-foreground) border border-(--color-primary) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+              className="inline-block mt-10 px-8 py-3 bg-(--color-background) text-(--color-header2) hover:bg-(--color-header1) hover:text-(--color-body) border border-(--color-header1) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
             >
               Learn More
             </a>

@@ -10,7 +10,7 @@ interface SearchMenusProps {
 
 export default function SearchMenus({ SearchMenus }: SearchMenusProps) {
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-12 md:py-16 bg-(--color-background)">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8">
           {SearchMenus.length > 0 ? (
@@ -31,19 +31,19 @@ export default function SearchMenus({ SearchMenus }: SearchMenusProps) {
                 </div>
                 <div className="flex flex-col flex-1 p-2">
                   <div className="flex-1">
-                    <h3 className="font-serif text-xl mb-2 text-(--color-title)">
+                    <h3 className="font-serif text-xl mb-2 text-(--color-header1)">
                       {item.name}
                     </h3>
-                    <p className="font-serif text-sm mb-2 text-(--color-title)">
+                    <p className="font-serif text-sm mb-2 text-(--color-header1)">
                       {item.thaiName}
                     </p>
-                    <p className="text-muted-foreground text-sm line-clamp-2">
+                    <p className="text-(--color-header1) text-sm line-clamp-2">
                       {item.description}
                     </p>
                   </div>
                   <div className="mt-4 text-(--color-title)">
                     <div className="flex flex-col sm:flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
-                      <span className="font-serif text-lg">{`฿${item.price}`}</span>
+                      <span className="font-serif text-(--color-header2) text-lg">{`฿${item.price}`}</span>
                       <div className="w-full md:w-auto">
                         <QuantityControls item={item} />
                       </div>

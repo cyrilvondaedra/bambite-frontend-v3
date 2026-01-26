@@ -8,41 +8,37 @@ const values = [
     description:
       "BamBite stay true to ourselves, designed to brighten your day, lift your mood, and remind you not to take life too seriously. Bam's spirit guides us - carefree, happy, optimistic. We believe food should be fun, uplifting, and full of personality.",
     image: "/hero.jpg",
-    color: "bg-primary/10",
   },
   {
     title: "Connection through Food",
     description:
       "We bring people together through shared flavors and stories. Food is how we bring worlds, cultures, and generations together. Every dish is crafted to make people feel closer—no matter where they come from.",
     image: "/hero.jpg",
-    color: "bg-accent/10",
   },
   {
     title: "Innovation with Purpose",
     description:
       "We push creative boundaries to make every flavor and experience feel meaningful. Through thoughtful research, experimentation, and intentional recipe design, we transform inspiration into dishes that surprise and delight.",
     image: "/hero.jpg",
-    color: "bg-primary/10",
   },
   {
     title: "Quality with Consistency",
     description:
       "From ingredient sourcing to packaging and shelf-life, BamBite ensures every bite meets the same high standard of taste, safety, and design, wherever it's enjoyed.",
     image: "/hero.jpg",
-    color: "bg-accent/10",
   },
 ];
 
 export default function ValuesSection() {
   return (
-    <section className="bg-muted py-24 md:py-32">
+    <section className="bg-(--color-foreground) py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div className="mb-16 text-center md:mb-24">
-          <span className="mb-4 inline-block text-sm font-medium uppercase tracking-[0.2em] text-primary">
+          <span className="mb-4 inline-block text-sm font-medium uppercase tracking-[0.2em] text-(--color-header1)">
             Our Values
           </span>
-          <h2 className="font-serif text-4xl font-medium text-foreground md:text-5xl">
+          <h2 className="font-serif text-4xl font-medium text-(--color-header2) md:text-5xl">
             What We Stand For
           </h2>
         </div>
@@ -86,10 +82,10 @@ function ValueCard({ value ,index}: { value: (typeof values)[0]; index: number }
           isEven ? "lg:col-start-2" : "lg:col-start-1"
         } `}
       >
-        <h3 className="mb-4 font-serif text-3xl font-medium text-foreground md:text-4xl">
+        <h3 className="mb-4 font-serif text-3xl font-medium text-(--color-header1) md:text-4xl">
           {value.title}
         </h3>
-        <p className="text-lg leading-relaxed text-muted-foreground">
+        <p className="text-lg leading-relaxed text-(--color-header2)">
           {value.description}
         </p>
       </div>

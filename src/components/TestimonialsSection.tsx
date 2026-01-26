@@ -76,13 +76,13 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-24 md:py-32 px-6 md:px-12 lg:px-20 bg-secondary">
+    <section className="py-24 md:py-32 px-6 md:px-12 lg:px-20 bg-(--color-background)">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           {/* <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-4">
             Feedbacks
           </p> */}
-          <h2 className="font-serif text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance text-(--color-text)">
+          <h2 className="font-serif text-(--color-header1) text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance">
             What our customers say
           </h2>
         </div>
@@ -92,16 +92,16 @@ export default function TestimonialsSection() {
             {getCurrentSlideItems().map((testimonial) => (
               <div
                 key={testimonial.id}
-                className="bg-card p-8 flex flex-col rounded-xl"
+                className="bg-(--color-header1) p-8 flex flex-col rounded-xl border border-(--color-border)"
               >
-                <blockquote className="font-serif text-lg leading-relaxed text-foreground mb-6 flex-1">
+                <blockquote className="font-serif text-lg leading-relaxed text-(--color-body) mb-6 flex-1">
                   &ldquo;{testimonial.quote}&rdquo;
                 </blockquote>
                 <div className="border-t border-(--color-primary) pt-6">
-                  <p className="text-foreground font-medium">
+                  <p className="text-(--color-body) font-medium">
                     {testimonial.author}
                   </p>
-                  <p className="text-muted-foreground text-sm mt-1">
+                  <p className="text-(--color-body) text-sm mt-1">
                     {testimonial.title}
                   </p>
                 </div>
@@ -126,7 +126,7 @@ export default function TestimonialsSection() {
                   className={`w-2 h-2 transition-colors rounded-full ${
                     index === currentSlide
                       ? "bg-(--color-primary)"
-                      : "bg-foreground/20"
+                      : "bg-(--color-header2)"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />

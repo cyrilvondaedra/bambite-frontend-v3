@@ -43,13 +43,13 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
   console.log(menuItem);
 
   return (
-    <section className="pt-32 pb-16">
+    <section className="pt-32 pb-16 bg-(--color-background)">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Left Side - Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative w-full h-105 bg-muted rounded-lg overflow-hidden">
+            <div className="relative w-full h-105 bg-(--color-foreground) rounded-lg overflow-hidden">
               <Image
                 src={menuItem.imageUrls[selectedImage]}
                 alt={menuItem.name}
@@ -66,7 +66,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`relative aspect-square rounded-md overflow-hidden border transition-all
-          ${selectedImage === index && "border-primary"}`}
+          ${selectedImage === index && "border-(--color-primary)"}`}
                 >
                   <Image
                     src={img}
@@ -81,19 +81,19 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
 
           {/* Right Side - Details */}
           <div className="flex flex-col">
-            <p className="text-xs uppercase tracking-ultra-wide text-muted-foreground mb-4">
+            <p className="text-xs uppercase tracking-ultra-wide text-(--color-header2) mb-4">
               {menuItem.category.name}
             </p>
 
-            <h1 className="font-serif text-4xl md:text-5xl font-light mb-6">
+            <h1 className="font-serif text-(--color-header2) text-4xl md:text-5xl font-light mb-6">
               {menuItem.name}
             </h1>
 
-            <p className="text-muted-foreground leading-relaxed mb-8">
+            <p className="text-(--color-body) leading-relaxed mb-8">
               {menuItem.thaiName}
             </p>
 
-            <p className="text-muted-foreground leading-relaxed mb-8">
+            <p className="text-(--color-header2) leading-relaxed mb-8">
               {menuItem.description}
             </p>
 
@@ -101,12 +101,12 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
               {menuItem.productOptions.length > 0 &&
                 menuItem.productOptions.map((opt) => (
                   <div key={opt.id} className="mb-4">
-                    <p className="font-medium mb-2">{opt.option.name}</p>
+                    <p className="font-medium text-(--color-header2) mb-2">{opt.option.name}</p>
 
                     {opt.option.optionLists.length > 2 ? (
                       <Combobox items={opt.option.optionLists}>
                         <ComboboxInput
-                          className="w-40 rounded-3xl"
+                          className="w-40 rounded-3xl border-(--color-header2) text-(--color-header2)"
                           placeholder={opt.option.optionLists[0]}
                         />
                         <ComboboxContent>
@@ -138,7 +138,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
             </div>
 
             <div className="mb-8">
-              <span className="font-serif text-3xl">฿{menuItem.price}</span>
+              <span className="font-serif text-(--color-header2) text-3xl">฿{menuItem.price}</span>
             </div>
 
             <div className="flex items-center gap-4 mb-8">
@@ -150,7 +150,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                 >
                   <Minus className="w-3 h-3" />
                 </button>
-                <span className="w-6 text-center text-sm">{quantity}</span>
+                <span className="w-6 text-(--color-header2) text-center text-sm">{quantity}</span>
                 <button
                   className="p-1 rounded-lg  border border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
                   aria-label="Increase quantity"
@@ -176,13 +176,13 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
               type="single"
               collapsible
               defaultValue="shipping"
-              className="max-w-lg"
+              className="max-w-lg text-(--color-header2)"
             >
               <AccordionItem value="shipping">
                 <AccordionTrigger className="text-xl hover:no-underline">
                   What are your Ingredients?
                 </AccordionTrigger>
-                <AccordionContent>{menuItem.ingredients}</AccordionContent>
+                <AccordionContent className="text-(--color-header2)">{menuItem.ingredients}</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

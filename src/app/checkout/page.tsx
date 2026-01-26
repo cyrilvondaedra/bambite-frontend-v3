@@ -40,7 +40,7 @@ const socials = [
     name: "TikTok",
     link: "https://www.tiktok.com/@bambite25?_r=1&_t=ZS-92g00es6bgN",
     icon: "/tt.svg",
-    color: "bg-black",
+    color: "bg-gray-700",
     hoverColor: "hover:bg-gray-800",
     width: 15,
     height: 15,
@@ -56,7 +56,7 @@ export default function Checkout() {
         </Suspense>
 
         {/* Hero */}
-        <section className="pt-32 pb-12 bg-(--color-background) text-(--color-text)">
+        <section className="pt-32 pb-12 bg-(--color-background) text-(--color-header1)">
           <div className="container mx-auto px-6 text-center">
             <h1 className="font-serif text-2xl md:text-3xl font-semibold mb-8">
               Send us order details to confirm your order

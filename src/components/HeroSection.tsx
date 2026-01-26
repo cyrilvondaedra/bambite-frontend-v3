@@ -16,20 +16,20 @@ export default function HeroSection() {
 
       <div className="relative z-10 w-full px-6 md:px-12 lg:px-20">
         <div className="max-w-2xl">
-          <p className="text-background/80 text-sm tracking-[0.3em] uppercase mb-4">
+          <p className="text-(--color-header1) text-sm tracking-[0.3em] uppercase mb-4">
             Bringing You More Ways to Enjoy Asian Cuisine
           </p>
-          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-background font-light leading-tight text-balance">
+          <h1 className="font-serif text-(--color-header1)  text-4xl md:text-6xl lg:text-7xl font-light leading-tight text-balance">
             Asian flavors beyond what you already know
           </h1>
-          <p className="mt-8 text-background/80 max-w-xl leading-relaxed">
+          <p className="mt-8 text-(--color-header1) max-w-xl leading-relaxed">
             Rooted in Asian flavors and reimagined with modern creativity,
             BamBite brings together bold tastes, and the joy of our little
             souls.
           </p>
           <a
             href="/menus"
-            className="inline-block mt-10 px-8 py-3 border border-(--color-primary) hover:text-white text-background text-sm rounded-3xl tracking-wider uppercase hover:bg-(--color-primary) transition-all duration-300"
+            className="inline-block bg-(--color-background) text-(--color-header2) hover:bg-(--color-header1) hover:text-(--color-body) border border-(--color-header1) mt-10 px-8 py-3  text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
           >
             Order Now
           </a>

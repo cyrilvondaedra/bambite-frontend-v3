@@ -39,14 +39,14 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="bg-(--color-primary) text-(--color-primary-foreground) border-t border-border">
+    <footer className="bg-(--color-foreground) text-(--color-header1)">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
-            <h3 className="text-2xl font-semibold tracking-wider text-(--color-primary-foreground) mb-6">
+            <h3 className="text-2xl font-semibold tracking-wider text-(--color-header1) mb-6">
               BamBite
             </h3>
-            <p className="text-(--color-primary-foreground) leading-relaxed mb-6">
+            <p className="text-(--color-header1) leading-relaxed mb-6">
               Experience culinary excellence in an atmosphere of refined
               elegance. Where every dish is crafted with passion and served with
               grace.
@@ -73,7 +73,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm tracking-wider text-(--color-primary-foreground) mb-6">
+            <h4 className="text-sm tracking-wider text-(--color-header1) mb-6">
               QUICK LINKS
             </h4>
 
@@ -81,7 +81,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/menus"
-                  className="text-(--color-primary-foreground) hover:text-accent transition-colors"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
                 >
                   Menu
                 </Link>
@@ -89,7 +89,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/about_us"
-                  className="text-(--color-primary-foreground) hover:text-accent transition-colors"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
                 >
                   About Us
                 </Link>
@@ -97,7 +97,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact_us"
-                  className="text-(--color-primary-foreground) hover:text-accent transition-colors"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
                 >
                   Contact Us
                 </Link>
@@ -105,7 +105,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/career"
-                  className="text-(--color-primary-foreground) hover:text-accent transition-colors"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
                 >
                   Career
                 </Link>
@@ -114,27 +114,36 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-sm tracking-wider text-(--color-primary-foreground) mb-6">
+            <h4 className="text-sm tracking-wider text-(--color-header1) mb-6">
               CONTACT
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-accent mt-0.5 shrink-0" />
-                <span className="text-(--color-primary-foreground)">
-                  Pathuwan
+                <MapPin className="h-5 w-5 text-(--color-header1) mt-0.5 shrink-0" />
+                <a
+                  href="https://g.page/r/CbAEnxeLhkl0ECA/review"
+                  target="_blank"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
+                >
+                  <span className="font-bold">Pathuwan</span>
                   <br />
                   169 Rama VI Soi 7, Khwaeng Rong Muang, Pathum Wan, Krung Thep
                   Maha Nakhon, Bangkok 10330
-                </span>
+                </a>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-accent mt-0.5 shrink-0" />
-                <span className="text-(--color-primary-foreground)">
-                  Udom Suk
+                <MapPin className="h-5 w-5 text-(--color-header1) mt-0.5 shrink-0" />
+                <a
+                  href="https://maps.app.goo.gl/nCvULtwA2Gs7pEDdA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
+                >
+                  <span className="font-bold">Udom Suk</span>
                   <br />
                   183/ Sukhumvit Road, 101/2, Bang Na Nuea, Bang Na, Bangkok
                   10260
-                </span>
+                </a>
               </li>
               {/* <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-accent shrink-0" />
@@ -146,10 +155,10 @@ export default function Footer() {
                 </a>
               </li> */}
               <li className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-accent shrink-0" />
+                <Mail className="h-5 w-5 text-(--color-header1) shrink-0" />
                 <a
-                  href="mailto:hello@noir.com"
-                  className="text-(--color-primary-foreground) hover:text-accent transition-colors"
+                  href="BamBite@Totals-Inc.com"
+                  className="text-(--color-header1) hover:text-(--color-primary) transition-colors"
                 >
                   BamBite@Totals-Inc.com
                 </a>
@@ -160,39 +169,35 @@ export default function Footer() {
             </p>
           </div>
           <div>
-            <h4 className="text-sm tracking-wider text-(--color-primary-foreground) mb-6">
+            <h4 className="text-sm tracking-wider text-(--color-header1) mb-6">
               HOURS
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <Clock className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+                <Clock className="h-5 w-5 text-(--color-header1) mt-0.5 shrink-0" />
                 <div className="text-muted-foreground">
-                  <p className="text-(--color-primary-foreground) mb-1">
-                    Monday - Sunday
-                  </p>
-                  <p className="text-(--color-primary-foreground)">
-                    10:00 AM - 12:00 AM
-                  </p>
+                  <p className="text-(--color-header1) mb-1">Monday - Sunday</p>
+                  <p className="text-(--color-header1)">10:00 AM - 12:00 AM</p>
                 </div>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-(--color-primary-foreground)">
+        <div className="mt-16 pt-8 border-t border-(--color-border) flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-(--color-header1))">
             © 2026 BamBite Restaurant. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link
               href="#"
-              className="text-sm text-(--color-primary-foreground) hover:text-accent transition-colors"
+              className="text-sm text-(--color-header1) hover:text-(--color-primary) transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
               href="#"
-              className="text-sm text-(--color-primary-foreground) hover:text-accent transition-colors"
+              className="text-sm text-(--color-header1) hover:text-(--color-primary) transition-colors"
             >
               Terms of Service
             </Link>

@@ -30,29 +30,29 @@ export default function CartSheet() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button
-          className="relative p-2 hover:bg-secondary transition-colors"
+          className="relative text-(--color-nav) hover:text-(--color-header1) p-2 transition-colors"
           aria-label="Open cart"
         >
           <ShoppingCart className="w-4 h-4 xl:w-5 xl:h-5" />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-(--color-primary) text-(--color-primary-foreground) text-xs flex items-center justify-center rounded-full">
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-(--color-primary) text-(--color-header1) hover:text-(--color-primary) text-xs flex items-center justify-center rounded-full">
               {totalItems}
             </span>
           )}
         </button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md flex flex-col">
+      <SheetContent className="w-full bg-(--color-header1) sm:max-w-md flex flex-col">
         <SheetHeader>
-          <SheetTitle className="font-serif text-2xl font-light">
+          <SheetTitle className="font-serif text-2xl font-light text-(--color-body)">
             Your Order
           </SheetTitle>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <ShoppingCart className="w-12 h-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">Your cart is empty</p>
-            <p className="text-sm text-muted-foreground mt-2">
+            <ShoppingCart className="w-12 h-12 text-(--color-body) mb-4" />
+            <p className="text-(--color-body)">Your cart is empty</p>
+            <p className="text-sm text-(--color-body) mt-2">
               Add items from the menu to get started
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function CartSheet() {
                           {item.quantity}
                         </span>
                         <button
-                          className="p-1 border rounded-lg  border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
+                          className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
                           aria-label="Increase quantity"
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)

@@ -21,10 +21,10 @@ export default function Register() {
     setIsLoading(false);
   };
   return (
-    <section id="sign-up" className="py-20 px-6">
+    <section id="sign-up" className="py-20 px-6 bg-(--color-background)">
       <div className="max-w-xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4 tracking-wide">
+          <h2 className="text-3xl md:text-4xl font-light text-(--color-header2) mb-4 tracking-wide">
             Create An Account?
           </h2>
         </div>
@@ -39,7 +39,7 @@ export default function Register() {
                   placeholder="Name"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-(--color-header2) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
                   // required
                 />
               </div>
@@ -53,7 +53,7 @@ export default function Register() {
                   placeholder="Email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-(--color-header2) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
                   required
                 />
               </div>
@@ -69,7 +69,7 @@ export default function Register() {
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
-                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-(--color-header2) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
                   required
                 />
                 <button
@@ -88,7 +88,7 @@ export default function Register() {
 
             <button
               type="submit"
-              className="w-full inline-block mt-10 px-8 py-3 bg-(--color-primary-foreground) text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-foreground) border border-(--color-primary) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+              className="w-full inline-block mt-10 px-8 py-3 bg-(--color-background) text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-header1) border border-(--color-primary) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -117,7 +117,7 @@ export default function Register() {
             </button>
             <div className="flex items-center justify-center">
               <div className="space-x-2 flex items-center">
-                <p>Already have an account?</p>
+                <p className="text-(--color-header2)">Already have an account?</p>
                 <Link
                   href="/my_account"
                   className="text-(--color-primary) text-center underline"
@@ -129,13 +129,13 @@ export default function Register() {
           </form>
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
+        <p className="text-center text-sm text-(--color-header2) mt-6">
           By creating an account, you agree to our{" "}
-          <a href="#" className="text-primary hover:underline">
+          <a href="#" className="text-(--color-primary) hover:underline">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="#" className="text-primary hover:underline">
+          <a href="#" className="text-(--color-primary) hover:underline">
             Privacy Policy
           </a>
         </p>
