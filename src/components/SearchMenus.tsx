@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import QuantityControls from "@/components/QualityControls";
-import Link from "next/link";
 import { MenuItem } from "@/types/api/menuItem";
 
 interface SearchMenusProps {
@@ -9,6 +8,8 @@ interface SearchMenusProps {
 }
 
 export default function SearchMenus({ SearchMenus }: SearchMenusProps) {
+  const quantity = 1;
+  const selectedOptions = null;
   return (
     <section className="py-12 md:py-16 bg-(--color-background)">
       <div className="container mx-auto px-6">
@@ -45,7 +46,9 @@ export default function SearchMenus({ SearchMenus }: SearchMenusProps) {
                     <div className="flex flex-col sm:flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
                       <span className="font-serif text-(--color-header2) text-lg">{`฿${item.price}`}</span>
                       <div className="w-full md:w-auto">
-                        <QuantityControls item={item} />
+                        <QuantityControls
+                          item={{ ...item, quantity, selectedOptions }}
+                        />
                       </div>
                     </div>
                   </div>

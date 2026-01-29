@@ -16,7 +16,7 @@ export default function AboutHeroSection() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-foreground/40" />
+        <div className="absolute inset-0 cover" />
       </div>
 
       {/* Content */}
@@ -24,13 +24,13 @@ export default function AboutHeroSection() {
         <div
           className="max-w-4xl"
         >
-          <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-(--color-header1)">
+          <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] sub_heading">
             Our Story
           </p>
-          <h1 className="font-serif text-5xl font-medium leading-tight text-(--color-header1) md:text-7xl lg:text-8xl">
+          <h1 className="font-serif text-5xl font-medium leading-tight heading md:text-7xl lg:text-8xl">
             BamBite
           </h1>
-          <p className="mt-6 text-lg text-(--color-header1) md:text-xl">
+          <p className="mt-6 text-lg sub_heading md:text-xl">
             Food is happiness, comfort, and connection
           </p>
         </div>

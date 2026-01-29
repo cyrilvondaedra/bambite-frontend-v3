@@ -62,7 +62,7 @@ export default function ContactUs() {
   return (
     <section
       id="contact_us"
-      className="py-24 md:py-32 px-6 md:px-12 lg:px-20 bg-(--color-background)"
+      className="py-24 md:py-32 px-6 md:px-12 lg:px-20 primary_background"
     >
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -71,15 +71,15 @@ export default function ContactUs() {
               src="/forcontact.jpg"
               alt="Restaurant interior"
               fill
-              className="object-cover"
+              className="object-cover rounded-2xl"
             />
           </div>
 
           <div>
-            <h2 className="font-serif text-(--color-header1) text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-8">
+            <h2 className="font-serif heading text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-8">
               Contact us
             </h2>
-            <p className="text-(--color-header2) text-lg leading-relaxed mb-10">
+            <p className="body text-lg leading-relaxed mb-10">
               We&apos;re Here for You. Questions about our products, locations,
               or collaborations? Send us a message and our support team will
               respond shortly.
@@ -93,7 +93,7 @@ export default function ContactUs() {
                   placeholder="Name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-0 py-3 text-(--color-header2) bg-transparent border-b border-(--color-primary) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none focus:primary_border transition-colors"
                   required
                 />
               </div>
@@ -104,7 +104,7 @@ export default function ContactUs() {
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-0 py-3 text-(--color-header2) bg-transparent border-b border-(--color-primary) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none focus:primary_border transition-colors"
                 required
               />
 
@@ -112,7 +112,7 @@ export default function ContactUs() {
                 id="reason"
                 value={formData.reason}
                 onChange={handleChange}
-                className="w-full px-0 py-3 text-(--color-header2) bg-transparent border-b border-(--color-primary) focus:outline-none focus:border-(--color-primary) transition-colors"
+                className="w-full px-0 py-3 heading bg-transparent border-b primary_border focus:outline-none focus:primary_border transition-colors"
                 required
               >
                 <option value="general_inquiry">General Inquiry</option>
@@ -128,14 +128,14 @@ export default function ContactUs() {
                 placeholder="Special requests or dietary requirements"
                 value={formData.message}
                 onChange={handleChange}
-                className="w-full px-0 py-3 text-(--color-header2) bg-transparent border-b border-(--color-primary) focus:border-(--color-primary) placeholder:text-muted-foreground focus:outline-none transition-colors resize-none"
+                className="w-full px-0 py-3 heading bg-transparent border-b primary_border focus:primary_border placeholder:heading focus:outline-none transition-colors resize-none"
                 required
               />
 
               <button
                 type="submit"
                 disabled={loading}
-                className="inline-block mt-10 px-8 py-3 bg-(--color-primary) text-(--color-header1) hover:opacity-90 border border-(--color-primary) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+                className="inline-block mt-10 px-8 py-3 primary_btn text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
               >
                 {loading ? "Sending..." : "Submit Request"}
               </button>

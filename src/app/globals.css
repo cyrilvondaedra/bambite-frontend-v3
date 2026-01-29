@@ -4,15 +4,15 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1.0000 0 0);
-  --foreground: oklch(0.2686 0 0);
-  --card: oklch(1.0000 0 0);
+  --background: #000000;
+  --foreground: #e5e5e5;
+  --card: #171717;
   --card-foreground: oklch(0.2686 0 0);
-  --title: oklch(0.2686 0 0);
   --popover: oklch(1.0000 0 0);
   --popover-foreground: oklch(0.2686 0 0);
-  --primary: oklch(0.7686 0.1647 70.0804);
+  --primary: #BBA07A;
   --primary-foreground: oklch(1.0000 0 0);
+  --logo: #BBA07A;
   --secondary: oklch(0.9670 0.0029 264.5419);
   --secondary-foreground: oklch(0.4461 0.0263 256.8018);
   --muted: oklch(0.9846 0.0017 247.8389);
@@ -174,11 +174,138 @@ html {
 }
 
 @layer base {
-  * {
+  /* * {
     @apply border-border outline-ring/50;
   }
 
   body {
     @apply bg-background text-foreground;
+  } */
+
+  .nav-link {
+    color: var(--color-foreground);
+    opacity: 0.8;
+    transition: all 0.3s;
   }
+
+  .nav-link:hover {
+    color: var(--color-foreground);
+    opacity: 1;
+  }
+
+  .primary_background {
+    background-color: var(--color-background);
+  }
+
+  .primary_btn {
+    background-color: var(--color-primary);
+    color: var(--color-foreground);
+  }
+
+  .logo {
+    color: var(--color-logo);
+  }
+
+  button:hover,
+  a[class*="btn"]:hover {
+    opacity: 0.8;
+  }
+
+  .secondary_btn {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  .border_border {
+    border: 2px;
+    border-color: var(--color-foreground);
+  }
+
+  .primary_border {
+    border: 2px;
+    border-color: var(--color-primary);
+  }
+
+  .primary_border :hover {
+    border: 2px;
+    border-color: var(--color-primary);
+  }
+
+  .secondary_border {
+    border: 2px;
+    border-color: var(--color-background);
+  }
+
+  .secondary_border:hover {
+    border: 2px;
+    border-color: var(--color-primary);
+  }
+
+  .heading {
+    color: var(--color-foreground);
+  }
+
+  .sub_heading {
+    color: var(--color-foreground);
+    opacity: 0.9;
+  }
+
+  .heading2 {
+    color: var(--color-background);
+  }
+
+  .sub_heading2 {
+    color: var(--color-background);
+  }
+
+  .sub_heading2:hover {
+    color: var(--color-primary);
+  }
+
+  .body {
+    color: var(--color-foreground);
+    opacity: 0.8;
+  }
+
+  .primary_text {
+    color: var(--color-primary);
+  }
+
+  .footer {
+    color: var(--color-foreground);
+    opacity: 0.8;
+  }
+
+  .footer:hover {
+    color: var(--color-foreground);
+    opacity: 0.8;
+  }
+
+  .map_link {
+    color: var(--color-foreground);
+    opacity: 0.8;
+  }
+
+  .map_link :hover {
+    color: var(--color-primary);
+  }
+
+  .secondary_background {
+    background-color: var(--color-foreground);
+  }
+
+  .cover {
+    background-color: var(--color-background);
+    opacity: 0.2;
+  }
+
+  .card {
+    background-color: var(--color-card);
+  }
+
+  textarea::placeholder {
+    color: var(--color-foreground);
+    opacity: 0.4;
+  }
+
 }

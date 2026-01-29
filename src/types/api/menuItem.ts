@@ -17,11 +17,11 @@ export interface MenuItem {
   description: string;
   categoryId: string;
   ingredients: string;
-  price: string; 
+  price: string;
   stockQuantity: number;
   imageUrls: string[];
-  createdAt: string; 
-  updatedAt: string; 
+  createdAt: string;
+  updatedAt: string;
   category: Category;
   productOptions: MenuItemOption[];
 }
@@ -35,7 +35,6 @@ export interface Category {
   updatedAt: string;
 }
 
-
 export interface MenuItemOption {
   id: string;
   productId: string;
@@ -44,7 +43,6 @@ export interface MenuItemOption {
   option: Option;
 }
 
-
 export interface Option {
   id: string;
   name: string;
@@ -52,6 +50,31 @@ export interface Option {
   optionLists: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+// CartItem interface
+export interface CartItem {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  quantity: number;
+  selectedOptions: {
+    id: string;
+    displayName: string;
+    value: string;
+  } | null;
+  image: string;
+  thaiName: string;
+}
+
+export interface MenuItemWithUserSelections extends Omit<MenuItem, 'selectedOptions'> {
+  quantity: number;
+  selectedOptions: {
+    id: string;
+    displayName: string;
+    value: string;
+  } | null;
 }
 
 export type MenuItemListResponse = ApiResponse<MenuItem[]>;

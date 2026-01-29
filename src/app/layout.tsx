@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { CartProvider } from "@/components/CartContext";
+import { UserProvider } from "@/components/UserContext";
 import { Toaster } from "@/components/ui/sonner";
 
 const _playfair = Playfair_Display({
@@ -41,7 +43,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${_dmSans.variable} ${_playfair.variable}`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <CartProvider>
+            <UserProvider>{children}</UserProvider>
+          </CartProvider>
+        </ThemeProvider>
         <Toaster position="top-center" expand={false} richColors />
       </body>
     </html>

@@ -8,12 +8,18 @@ export interface CartItem {
   description: string;
   price: string;
   quantity: number;
+  selectedOptions: {
+    id: string;
+    displayName: string;
+    value: string;
+  } | null;
   image: string;
+  thaiName: string;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "quantity">) => void;
+  addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -30,7 +36,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
 
-  const addItem = (newItem: Omit<CartItem, "quantity">) => {
+  const addItem = (newItem: CartItem) => {
     setItems((prev) => {
       const existingItem = prev.find((item) => item.id === newItem.id);
       if (existingItem) {
@@ -40,7 +46,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             : item,
         );
       }
-      return [...prev, { ...newItem, quantity: 1 }];
+
+      return [...prev, newItem as CartItem];
     });
   };
 
@@ -49,12 +56,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const updateQuantity = (id: string, quantity: number) => {
-    if (quantity <= 0) {
+    console.log("quantity", quantity);
+
+    if (quantity < 1) {
       removeItem(id);
       return;
     }
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: quantity } : item,
+      ),
     );
   };
 

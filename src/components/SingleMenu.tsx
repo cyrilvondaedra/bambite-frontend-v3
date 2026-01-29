@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
-import { MenuItem } from "@/types/api/menuItem";
+import { useEffect, useState } from "react";
+import { MenuItem, MenuItemOption } from "@/types/api/menuItem";
 import QuantityControls from "./QualityControls";
 import { useRouter } from "next/navigation";
 import { useCart } from "./CartContext";
@@ -27,29 +27,56 @@ interface SingleMenuProps {
 
 export default function SingleMenu({ menuItem }: SingleMenuProps) {
   const router = useRouter();
-  const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  const { updateQuantity } = useCart();
+  const { items, updateQuantity } = useCart();
+  const cartItem = items.find((item) => item.id === menuItem.id);
+  const [quantity, setQuantity] = useState(cartItem?.quantity || 1);
+  const [selectedOptions, setSelectedOptions] = useState<{
+    id: string;
+    displayName: string;
+    value: string;
+  } | null>(null);
 
   const decreaseQuantity = (id: string) => {
-    if (quantity > 1) setQuantity(quantity - 1);
-    updateQuantity(id, quantity - 1);
+    if (quantity <= 1) {
+      return;
+    }
+    const newQuantity = quantity - 1;
+    setQuantity(newQuantity);
+    updateQuantity(id, newQuantity);
   };
 
   const increaseQuantity = (id: string) => {
-    setQuantity(quantity + 1);
-    updateQuantity(id, quantity + 1);
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    updateQuantity(id, newQuantity);
   };
-  console.log(menuItem);
 
+  useEffect(() => {
+    // Only update if cartItem quantity exists and differs from current quantity
+    if (cartItem?.quantity !== undefined && cartItem.quantity !== quantity) {
+      setQuantity(cartItem?.quantity);
+    }
+  }, [cartItem?.quantity]);
+
+  const handleOptionChange = (opt: MenuItemOption, value: string | null) => {
+    if (!value) return;
+
+    setSelectedOptions({
+      id: opt.optionId,
+      displayName: opt.option.displayName,
+      value: value,
+    });
+  };
+  
   return (
-    <section className="pt-32 pb-16 bg-(--color-background)">
+    <section className="pt-32 pb-16 primary_background">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
           {/* Left Side - Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative w-full h-105 bg-(--color-foreground) rounded-lg overflow-hidden">
+            <div className="relative w-full h-105 secondary_background rounded-lg overflow-hidden">
               <Image
                 src={menuItem.imageUrls[selectedImage]}
                 alt={menuItem.name}
@@ -66,7 +93,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`relative aspect-square rounded-md overflow-hidden border transition-all
-          ${selectedImage === index && "border-(--color-primary)"}`}
+          ${selectedImage === index && "primary_border"}`}
                 >
                   <Image
                     src={img}
@@ -81,19 +108,19 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
 
           {/* Right Side - Details */}
           <div className="flex flex-col">
-            <p className="text-xs uppercase tracking-ultra-wide text-(--color-header2) mb-4">
+            <p className="text-xs uppercase sub_heading tracking-ultra-wide mb-4">
               {menuItem.category.name}
             </p>
 
-            <h1 className="font-serif text-(--color-header2) text-4xl md:text-5xl font-light mb-6">
+            <h1 className="font-serif heading text-4xl md:text-5xl font-light mb-6">
               {menuItem.name}
             </h1>
 
-            <p className="text-(--color-body) leading-relaxed mb-8">
+            <p className="sub_heading leading-relaxed mb-8">
               {menuItem.thaiName}
             </p>
 
-            <p className="text-(--color-header2) leading-relaxed mb-8">
+            <p className="sub_heading leading-relaxed mb-8">
               {menuItem.description}
             </p>
 
@@ -101,12 +128,23 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
               {menuItem.productOptions.length > 0 &&
                 menuItem.productOptions.map((opt) => (
                   <div key={opt.id} className="mb-4">
-                    <p className="font-medium text-(--color-header2) mb-2">{opt.option.name}</p>
-
+                    <p className="font-medium sub_heading mb-2">
+                      {opt.option.name}
+                    </p>
                     {opt.option.optionLists.length > 2 ? (
-                      <Combobox items={opt.option.optionLists}>
+                      <Combobox
+                        items={opt.option.optionLists}
+                        value={
+                          selectedOptions?.id === opt.optionId
+                            ? selectedOptions.value
+                            : ""
+                        }
+                        onValueChange={(value) =>
+                          handleOptionChange(opt, value || "")
+                        }
+                      >
                         <ComboboxInput
-                          className="w-40 rounded-3xl border-(--color-header2) text-(--color-header2)"
+                          className="w-40 rounded-3xl border border_border sub_heading"
                           placeholder={opt.option.optionLists[0]}
                         />
                         <ComboboxContent>
@@ -127,7 +165,18 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                             key={i}
                             className="flex items-center gap-2 text-sm"
                           >
-                            <input type="radio" name={opt.id} value={list} />
+                            <input
+                              type="radio"
+                              name={opt.optionId}
+                              value={list}
+                              checked={
+                                selectedOptions?.id === opt.optionId &&
+                                selectedOptions?.value === list
+                              }
+                              onChange={(e) =>
+                                handleOptionChange(opt, e.target.value)
+                              }
+                            />
                             <span>{list}</span>
                           </label>
                         ))}
@@ -138,21 +187,25 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
             </div>
 
             <div className="mb-8">
-              <span className="font-serif text-(--color-header2) text-3xl">฿{menuItem.price}</span>
+              <span className="font-serif sub_heading text-3xl">
+                ฿{menuItem.price}
+              </span>
             </div>
 
             <div className="flex items-center gap-4 mb-8">
               <div className="flex items-center gap-2">
                 <button
-                  className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
+                  className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-foreground) hover:bg-(--color-primary)  transition-colors"
                   aria-label="Decrease quantity"
                   onClick={() => decreaseQuantity(menuItem.id)}
                 >
                   <Minus className="w-3 h-3" />
                 </button>
-                <span className="w-6 text-(--color-header2) text-center text-sm">{quantity}</span>
+                <span className="w-6 sub_heading text-center text-sm">
+                  {quantity}
+                </span>
                 <button
-                  className="p-1 rounded-lg  border border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
+                  className="p-1 rounded-lg  border border-(--color-primary) text-(--color-primary) hover:text-(--color-foreground) hover:bg-(--color-primary)  transition-colors"
                   aria-label="Increase quantity"
                   onClick={() => increaseQuantity(menuItem.id)}
                 >
@@ -163,7 +216,9 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <QuantityControls item={menuItem} />
+              <QuantityControls
+                item={{ ...menuItem, quantity, selectedOptions }}
+              />
               <button
                 onClick={() => router.push("/checkout")}
                 className="w-50 flex items-center justify-center gap-2 p-2 bg-(--color-primary) text-(--color-primary-foreground) border border-(--color-primary) hover:border rounded-3xl text-xs tracking-wider transition-colors"
@@ -182,7 +237,9 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
                 <AccordionTrigger className="text-xl hover:no-underline">
                   What are your Ingredients?
                 </AccordionTrigger>
-                <AccordionContent className="text-(--color-header2)">{menuItem.ingredients}</AccordionContent>
+                <AccordionContent className="text-(--color-header2)">
+                  {menuItem.ingredients}
+                </AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>

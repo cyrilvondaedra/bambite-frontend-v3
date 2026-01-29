@@ -15,32 +15,32 @@ export default function AboutSection() {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8">
-            <h2 className="font-serif text-4xl font-medium leading-tight text-(--color-header1) md:text-5xl lg:text-6xl text-balance">
+            <h2 className="font-serif text-4xl font-medium leading-tight heading md:text-5xl lg:text-6xl text-balance">
               About Us
             </h2>
 
-            <div className="space-y-6 text-lg leading-relaxed text-(--color-header2)">
-              <p>
+            <div className="space-y-6 text-lg leading-relaxed">
+              <p className="body">
                 Hi, I&apos;m Bam. Welcome to my imaginative little world where
                 familiar flavors meet new ideas and every bite becomes a joyful
                 adventure.
               </p>
 
-              <p>
-                <span className="font-semibold text-(--color-primary)">BamBite</span>{" "}
+              <p className="body">
+                <span className="font-semibold primary_text">BamBite</span>{" "}
                 is the way of connecting generations, cultures, and experiences
                 through food. Inspired by cuisines from across Asia, we explore
                 flavors, techniques, and dishes beyond the familiar with
                 creativity and care.
               </p>
 
-              <p>
+              <p className="body">
                 The result is food that feels comforting and approachable, yet a
                 little unexpected — offering something new while still feeling
                 right at home.
               </p>
 
-              <p className="text-(--color-header2) font-medium italic border-l-4 border-(--color-primary) pl-6">
+              <p className="font-medium body italic border-l-4 primary_border pl-6">
                 &quot;At BamBite, every dish is an invitation to discover,
                 enjoy, and have fun through flavor.&quot;
               </p>
@@ -48,7 +48,7 @@ export default function AboutSection() {
 
             <a
               href="/about_us"
-              className="inline-block mt-10 px-8 py-3 bg-(--color-background) text-(--color-header2) hover:bg-(--color-header1) hover:text-(--color-body) border border-(--color-header1) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+              className="inline-block mt-10 px-8 py-3 secondary_btn border border_border text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
             >
               Learn More
             </a>

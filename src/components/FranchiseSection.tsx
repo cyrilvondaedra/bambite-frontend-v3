@@ -29,15 +29,15 @@ export default function FranchiseSection() {
   return (
     <section
       id="franchise"
-      className="py-24 md:py-32 bg-(--color-foreground) text-(--color-header2)"
+      className="py-24 md:py-32 secondary_background"
     >
       <div className="max-w-6xl mx-auto px-6 md:px-12">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <p className="font-serif text-(--color-header1) text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-4">
+            <p className="font-serif heading2 text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-4">
               Franchise Opportunity
             </p>
-            <p className="text-(--color-nav) leading-relaxed mb-8">
+            <p className="heading2 leading-relaxed mb-8">
               We are expanding and looking for passionate partners to bring the
               Terroir experience to new locations. Join our family of
               restaurateurs and be part of a culinary legacy built on
@@ -49,11 +49,11 @@ export default function FranchiseSection() {
             {benefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className="p-6 border border-text-(--color-border) hover:border-(--color-primary) transition-colors rounded-lg"
+                className="p-6 border secondary_border transition-colors rounded-lg"
               >
-                <benefit.icon className="w-8 h-8 mb-4 text-(--color-nav)" />
-                <h3 className="font-serif text-xl mb-2 text-(--color-header1)">{benefit.title}</h3>
-                <p className="text-(--color-nav) text-sm leading-relaxed">
+                <benefit.icon className="w-8 h-8 mb-4 heading2" />
+                <h3 className="font-serif text-xl mb-2 heading2">{benefit.title}</h3>
+                <p className="heading2 text-sm leading-relaxed">
                   {benefit.description}
                 </p>
               </div>

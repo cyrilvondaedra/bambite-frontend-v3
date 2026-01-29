@@ -4,15 +4,11 @@
       "id": 1,
       "name": "High Contrast Dark",
       "colors": {
-        "primary": "#bba07a",
-        "foreground": "#121212",
+        "primary": "#BBA07A",
+        "foreground": "#e5e5e5",
         "background": "#000000",
-        "nav": "#c9c5c5",
-        "header1" :"#fff",
-        "header2": "#d1d5db",
-        "border" : "#dadde1",
-        "body": "#000",
-        "card": "#121212"
+        "logo": "#BBA07A",
+        "card": "#171717"
       },
       "selected": true,
       "created_at": "2024-10-01T12:00:00Z",

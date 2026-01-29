@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,17 +14,48 @@ export default function SignIn() {
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
+    try {
+      e.preventDefault();
+      setIsLoading(true);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+          }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to submit form");
+      }
+
+      toast.success("Your have successfully signed in!");
+      setForm({
+        email: "",
+        password: "",
+      });
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message || "An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <section id="sign-in" className="py-20 px-6 bg-(--color-background)">
       <div className="max-w-xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-light text-(--color-header2) mb-4 tracking-wide">
+          <h2 className="text-3xl md:text-4xl font-light heading mb-4 tracking-wide">
             My account
           </h2>
         </div>
@@ -38,14 +70,14 @@ export default function SignIn() {
                   placeholder="Email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-(--color-header2) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none focus:primary_border focus:border-(--color-primary) transition-colors"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <div>
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -54,18 +86,18 @@ export default function SignIn() {
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
-                  className="w-full px-0 py-3 bg-transparent border-b border-(--color-primary) text-(--color-header2) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:primary_border  placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 sub_heading transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-(--color-header2)" />
+                    <EyeOff className="h-4 w-4 heading" />
                   ) : (
-                    <Eye className="h-4 w-4 text-(--color-header2)" />
+                    <Eye className="h-4 w-4 heading" />
                   )}
                 </button>
               </div>
@@ -73,7 +105,7 @@ export default function SignIn() {
 
             <button
               type="submit"
-              className="w-full inline-block mt-10 px-8 py-3 bg-(--color-background) text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-header1) border border-(--color-primary) text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+              className="w-full inline-block mt-10 px-8 py-3 primary_btn text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -102,10 +134,10 @@ export default function SignIn() {
             </button>
             <div className="flex items-center justify-center">
               <div className="space-x-2 flex items-center">
-                <p className="text-(--color-header2)">Don&apos;t have an account?</p>
+                <p className="heading">Don&apos;t have an account?</p>
                 <Link
                   href="/register"
-                  className="text-(--color-primary) text-center underline"
+                  className="primary_text text-center underline"
                 >
                   Sign up
                 </Link>

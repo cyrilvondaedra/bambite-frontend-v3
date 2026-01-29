@@ -1,98 +1,371 @@
 "use client";
-
-import { Suspense } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { CartProvider } from "@/components/CartContext";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { z } from "zod";
+import Image from "next/image";
+import VerifyEmail from "@/components/VerifyEmailModal";
 
-const socials = [
-  {
-    name: "Facebook",
-    link: "https://www.facebook.com/profile.php?id=61581495755518",
-    icon: "/fb.webp",
-    color: "bg-blue-500",
-    hoverColor: "hover:bg-blue-600",
-    width: 15,
-    height: 15,
-  },
-  {
-    name: "Line",
-    link: "https://line.me/R/ti/p/@276tolpa?oat_content=url&ts=12311741",
-    icon: "/line.svg",
-    color: "bg-green-500",
-    hoverColor: "hover:bg-green-600",
-    width: 20,
-    height: 20,
-  },
-  {
-    name: "Instagram",
-    link: "https://www.instagram.com/bambiteburst?igsh=MTk1cDRieXN3ZTAzbg%3D%3D",
-    icon: "/ig.svg",
-    color: "bg-pink-600",
-    hoverColor: "hover:bg-pink-700",
-    width: 15,
-    height: 15,
-  },
-  {
-    name: "TikTok",
-    link: "https://www.tiktok.com/@bambite25?_r=1&_t=ZS-92g00es6bgN",
-    icon: "/tt.svg",
-    color: "bg-gray-700",
-    hoverColor: "hover:bg-gray-800",
-    width: 15,
-    height: 15,
-  },
-];
+const checkoutSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email({ message: "Please enter a valid email address" })
+    .max(255),
+  phone: z
+    .string()
+    .trim()
+    .min(10, { message: "Please enter a valid phone number" })
+    .max(20),
+});
 
-export default function Checkout() {
+export default function CheckoutPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({ email: "", phone: "" });
+  const [errors, setErrors] = useState<{ email?: string; phone?: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const result = checkoutSchema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: { email?: string; phone?: string } = {};
+
+      result.error.issues.forEach((err) => {
+        const field = err.path[0] as keyof typeof fieldErrors;
+        fieldErrors[field] = err.message;
+      });
+
+      setErrors(fieldErrors);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Simulate order processing
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // toast({
+    //   title: "Order Placed",
+    //   description: "Thank you for your order! We'll contact you shortly.",
+    // });
+
+    setIsSubmitting(false);
+    router.push("/order_success");
+  };
+
+  const handleVerifyEmail = async () => {
+    try {
+      setIsSubmitting(true);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/verify-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            phone: formData.phone,
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to send verification email");
+      }
+
+      const data = await res.json();
+      console.log("Verification sent:", data);
+
+      setOpen(false);
+      router.push("/");
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const user = false;
+
+  const onPlaceOrder = (e: React.MouseEvent) => {
+    console.log("onPlaceOrder");
+
+    if (!user) {
+      setOpen(true);
+      return;
+    }
+
+    handleSubmit(e as unknown as React.FormEvent);
+  };
+
   return (
-    <CartProvider>
-      <main className="min-h-screen bg-(--color-background)">
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header />
-        </Suspense>
-
-        {/* Hero */}
-        <section className="pt-32 pb-12 bg-(--color-background) text-(--color-header1)">
-          <div className="container mx-auto px-6 text-center">
-            <h1 className="font-serif text-2xl md:text-3xl font-semibold mb-8">
-              Send us order details to confirm your order
-            </h1>
-
-            <div className="max-w-md mx-auto space-y-4">
-              {socials.map((social) => (
-                <Button
-                  key={social.name}
-                  asChild
-                  size="lg"
-                  className={`${social.color} ${social.hoverColor} w-full rounded-xl text-white`}
+    <>
+      <main className="min-h-screen secondary_background">
+        {/* Header */}
+        <header className="fixed top-0 left-0 right-0 z-50 primary_background backdrop-blur-md">
+          <div className="container mx-auto px-6">
+            <div className="flex items-center justify-between">
+              <Link
+                href="/menus"
+                className="flex items-center gap-2 text-xs uppercase tracking-ultra-wide nav-link transition-colors"
+              >
+                <ArrowLeft size={16} />
+                <span className="">Back to Menu</span>
+              </Link>
+              <Link href="/" className="w-15 xl:w-40">
+                <svg
+                  width="256"
+                  height="98"
+                  viewBox="0 0 256 98"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="logo max-w-20 xl:max-w-30"
                 >
-                  <Link
-                    href={social.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3"
+                  <g
+                    clip-path="url(#clip0_667_5454)"
+                    filter="url(#filter0_g_667_5454)"
                   >
-                    <Image
-                      src={social.icon}
-                      alt={`${social.name} Logo`}
-                      width={social.width}
-                      height={social.height}
-                      className="shrink-0"
+                    <path
+                      d="M37.7969 13.2671C42.5186 13.2923 54.2663 11.906 54.2158 24.6528C54.2006 28.6879 52.7985 31.472 49.167 32.8794C53.2679 34.9022 55.0083 38.1312 54.9932 42.0103C54.9375 54.8325 42.3927 51.4073 37.7012 50.6001V50.606C34.6125 50.093 31.526 49.5535 28.4443 48.9888C26.3186 48.5992 24.7824 46.7417 24.7822 44.5806V16.4702C24.7823 14.6936 26.2234 13.2535 28 13.2554C31.2654 13.2592 34.5315 13.2633 37.7969 13.2671ZM39.9111 35.5562C39.7174 35.517 39.5105 35.5109 39.3223 35.5347C39.1369 35.5582 38.9515 35.6128 38.8115 35.7065C38.7509 35.7471 38.6873 35.8011 38.6426 35.8823C38.6203 35.9229 38.6049 35.9649 38.5957 36.0083L38.583 36.1421C38.583 36.9034 38.5806 37.8671 38.5781 39.0327C38.5756 40.1983 38.5733 41.161 38.5732 41.9185V41.9282C38.5764 41.9913 38.5927 42.0656 38.6396 42.145C38.6851 42.2218 38.7542 42.2946 38.8496 42.3647L38.8896 42.3931C39.0957 42.5325 39.3679 42.6316 39.6396 42.6685C39.9274 42.7074 40.2471 42.6807 40.501 42.5259C40.536 42.5045 40.5991 42.4653 40.6416 42.3921C40.6833 42.3202 40.691 42.2427 40.6914 42.1772V42.1763C40.6935 40.6402 40.701 37.8853 40.7061 36.3491C40.7063 36.1143 40.6014 35.9279 40.4463 35.7964C40.2967 35.6698 40.103 35.595 39.9111 35.5562ZM39.9111 21.5122C39.7174 21.473 39.5105 21.4669 39.3223 21.4907C39.1369 21.5142 38.9515 21.5688 38.8115 21.6626C38.751 21.7032 38.6873 21.7572 38.6426 21.8384C38.6203 21.8789 38.6048 21.9209 38.5957 21.9644L38.583 22.0981C38.583 22.8595 38.5806 23.8231 38.5781 24.9888C38.5756 26.1541 38.5733 27.1161 38.5732 27.8735V27.8843C38.5764 27.9474 38.5927 28.0216 38.6396 28.1011C38.6851 28.1779 38.7542 28.2506 38.8496 28.3208C39.0598 28.4751 39.3499 28.5852 39.6396 28.6245C39.9274 28.6635 40.2471 28.6367 40.501 28.4819C40.536 28.4606 40.5991 28.4213 40.6416 28.3481C40.6833 28.2763 40.691 28.1988 40.6914 28.1333V28.1323C40.6935 26.5963 40.701 23.8414 40.7061 22.3052C40.7063 22.0704 40.6014 21.884 40.4463 21.7524C40.2967 21.6258 40.103 21.5511 39.9111 21.5122Z"
+                      fill="currentColor"
                     />
-                    <span>Send to {social.name}</span>
-                  </Link>
-                </Button>
-              ))}
+                    <path
+                      d="M78.3311 13C82.5683 12.995 85.53 14.9017 85.6914 19.4668C86.1908 31.7902 86.6949 44.1442 87.1943 56.5332C82.7049 56.2003 78.2156 55.8111 73.7363 55.3672L73.2197 55.3145C73.2233 53.4495 73.228 51.1657 73.2314 48.8818C73.2365 45.5144 73.242 42.146 73.2471 40.123C73.2488 39.3763 73.0944 38.808 72.8613 38.416C72.6427 38.0486 72.3542 37.8359 72.0586 37.7764L72.0566 37.7754H72.0547L72.0029 37.7666H71.999C71.6786 37.7244 71.3884 37.8692 71.1875 38.1465C71.0105 38.3909 70.8561 38.802 70.8359 39.4834V39.4912L70.834 39.623V39.6299C70.8289 41.6389 70.8234 44.9846 70.8184 48.3311C70.8147 50.7433 70.8103 53.1568 70.8066 55.0693L70.1045 54.999C65.6856 54.5349 61.2662 54.0104 56.8574 53.4404C57.4476 42.0403 58.0426 30.5797 58.6328 19.0586C58.8346 14.8013 61.8665 13.0102 66.1035 13H78.3311ZM72.1973 22.1465C71.6183 22.1465 71.1486 22.6154 71.1484 23.1943V29.0078C71.1484 29.5869 71.6182 30.0566 72.1973 30.0566C72.7762 30.0565 73.2451 29.5868 73.2451 29.0078V23.1943C73.245 22.6155 72.7761 22.1467 72.1973 22.1465Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M103.383 48.5123C103.378 51.5087 103.367 54.5 103.362 57.4964C99.0092 57.2996 94.6559 57.0575 90.3076 56.7599C90.3581 42.2775 90.4035 27.7951 90.4539 13.3127C94.9938 13.3127 99.5338 13.3127 104.074 13.3178C105.153 17.5298 106.233 21.752 107.317 25.9842C107.741 27.0637 107.923 27.6387 108.528 27.6438C109.133 27.6488 109.315 27.0839 109.744 26.0094C110.843 21.7873 111.938 17.5601 113.032 13.3178C117.572 13.3178 122.112 13.3178 126.652 13.3178C126.652 28.2239 126.652 43.135 126.647 58.0411C122.289 58.0311 117.931 57.9705 113.577 57.8545C113.577 54.838 113.587 51.8164 113.592 48.7999C113.592 48.1643 112.927 48.023 112.74 48.593C111.787 50.7974 110.828 52.9968 109.875 55.1911C109.264 57.0121 107.685 56.9566 107.08 55.1003C106.132 52.8505 105.183 50.6007 104.24 48.361C104.059 47.7859 103.393 47.8919 103.393 48.5224L103.383 48.5123Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M163.144 56.9219C163.099 42.3841 163.053 27.8462 163.008 13.3134C167.346 13.3134 171.684 13.3134 176.022 13.3083C176.078 27.5183 176.133 41.7283 176.189 55.9383C171.846 56.3217 167.497 56.6496 163.144 56.927V56.9219Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M200.18 26.3122C200.215 35.3012 200.255 44.2903 200.291 53.2844C194.954 53.9906 189.612 54.6161 184.26 55.1659C184.219 45.7582 184.179 36.3454 184.144 26.9377C184.138 25.6816 183.836 25.273 182.262 25.3184C181.072 25.3537 179.881 25.384 178.691 25.4193C178.675 21.3838 178.66 17.3433 178.64 13.3078C187.619 13.3027 196.598 13.2926 205.577 13.2876C205.592 17.0255 205.607 20.7633 205.617 24.5063C204.427 24.5567 203.236 24.6021 202.051 24.6526C200.477 24.7131 200.18 25.1267 200.185 26.3273L200.18 26.3122Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M143.274 13.3181C147.996 13.3079 159.734 11.906 159.774 25.8279C159.79 30.2667 158.402 33.4294 154.771 35.4119C158.897 37.2632 160.667 40.5679 160.682 44.8152C160.727 58.7624 148.087 57.7584 143.34 57.824V57.8298C138.982 57.9509 134.628 58.0208 130.27 58.0359C130.27 43.13 130.265 28.224 130.26 13.3181H143.274ZM145.27 39.0037C144.962 39.0072 144.677 39.1183 144.479 39.3074C144.294 39.4832 144.123 39.7822 144.124 40.2898V40.2966C144.124 41.8454 144.124 45.4188 144.129 46.9656V46.9861C144.119 47.538 144.295 47.8084 144.444 47.9431C144.61 48.0923 144.867 48.1844 145.181 48.1628C145.816 48.1189 146.413 47.6501 146.411 46.8035V46.8025C146.411 45.281 146.405 41.7324 146.4 40.2087V40.2078C146.4 39.7266 146.234 39.4477 146.055 39.2839C145.86 39.106 145.578 39.0002 145.27 39.0037ZM145.158 22.8777C144.853 22.8745 144.581 22.9702 144.399 23.1238C144.236 23.2623 144.101 23.4836 144.101 23.8562V23.8611C144.101 25.6752 144.105 28.7132 144.11 30.5291C144.128 31.0105 144.536 31.3778 145.207 31.3806C145.522 31.3818 145.794 31.2881 145.97 31.1462C146.124 31.0216 146.244 30.8314 146.243 30.5046V30.5027C146.243 28.7083 146.238 25.6942 146.233 23.8933V23.8914C146.233 23.5218 146.098 23.2932 145.927 23.1453C145.739 22.9832 145.463 22.881 145.158 22.8777Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M228.618 13.2551C230.039 13.2534 231.193 14.4053 231.193 15.8268V22.7656V23.6079C229.818 23.6754 226.856 23.7604 226.418 23.7836L226.416 23.7838H226.413C224.951 23.8523 224.632 24.5912 224.638 24.8965C224.641 25.0763 224.726 25.2821 224.966 25.4531C225.213 25.629 225.662 25.789 226.384 25.7382H226.385L229.689 25.6189V26.3824V35.4672V36.3209C227.712 36.4321 226.866 36.5203 226.542 36.5568L226.54 36.557C225.076 36.7182 224.69 37.5041 224.691 37.8525C224.691 38.0299 224.767 38.2034 224.971 38.3387C225.169 38.4698 225.539 38.5928 226.145 38.542L226.343 38.5156L231.193 38.1396V38.7866V44.7537C231.193 46.8114 229.731 48.5806 227.707 48.9528C221.265 50.1374 214.806 51.2061 208.332 52.159C208.286 39.2001 208.236 26.2361 208.19 13.2771C215 13.2682 221.809 13.2632 228.618 13.2551Z"
+                      fill="currentColor"
+                    />
+                  </g>
+                  <g filter="url(#filter1_g_667_5454)">
+                    <path
+                      d="M7.92193 25.4895C10.9279 24.7393 10.0925 27.3309 9.73751 29.0349C9.14748 31.8674 10.1071 37.2602 14.2268 41.7805C18.1005 46.0309 22.8667 46.7694 26.2182 49.8596C29.1907 52.6005 29.2052 57.0508 27.4819 60.9362C24.507 67.6434 15.9889 66.7582 10.9673 62.5956C4.5508 57.2767 1.18319 50.254 0.475444 40.6418C0.205895 36.9773 2.25038 26.905 7.92193 25.4895Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M245.352 29.0347C244.997 27.3307 244.163 24.7396 247.168 25.4897C252.84 26.9056 254.884 36.9777 254.615 40.6421C254.374 43.9094 253.824 46.8769 252.954 49.5806C252.313 49.5667 251.673 49.4699 251.067 49.3208C249.814 49.0124 248.73 48.4949 248.117 48.1079C247.912 47.9632 247.769 47.8571 247.706 47.8091C247.691 47.798 247.678 47.7888 247.671 47.7837C247.67 47.7824 247.667 47.7795 247.665 47.7778L247.652 47.77C247.65 47.7687 247.641 47.7635 247.631 47.7583C247.627 47.7561 247.61 47.7472 247.587 47.7407C247.572 47.7369 247.529 47.7315 247.501 47.7319C247.448 47.7426 247.336 47.8155 247.293 47.8843C247.278 47.9427 247.282 48.0342 247.292 48.064C247.298 48.0792 247.311 48.1019 247.317 48.1108C247.327 48.1255 247.337 48.1363 247.339 48.1392C247.346 48.1466 247.352 48.1525 247.353 48.1538C247.355 48.1558 247.357 48.1577 247.358 48.1587C247.361 48.1617 247.365 48.1643 247.367 48.1655C247.377 48.1741 247.412 48.2029 247.464 48.2456C247.566 48.3283 247.696 48.4205 247.848 48.5171C247.851 48.519 247.855 48.521 247.858 48.5229C248.489 48.9673 249.672 49.7482 250.999 50.3394C251.479 50.5536 251.987 50.7452 252.499 50.8872C250.762 55.5424 248.001 59.3804 244.123 62.5952C239.101 66.7579 230.583 67.6432 227.608 60.936C225.885 57.0507 225.899 52.6007 228.872 49.8599C231.164 47.7464 234.117 46.732 236.995 44.9429C237.161 45.7309 237.651 46.5034 238.266 47.2075C238.99 48.0363 239.917 48.8028 240.786 49.4321C241.655 50.062 242.477 50.5609 243 50.853C243.258 50.9968 243.455 51.0958 243.549 51.1343C243.562 51.1395 243.577 51.1462 243.591 51.1509C243.6 51.1537 243.631 51.1637 243.668 51.1655C243.679 51.166 243.751 51.1699 243.821 51.1226C243.865 51.0923 243.904 51.0438 243.92 50.981C243.935 50.9235 243.926 50.8737 243.917 50.8462C243.902 50.7973 243.874 50.7653 243.868 50.7573C243.857 50.7447 243.847 50.7348 243.84 50.729C243.802 50.6949 243.733 50.6508 243.657 50.605C243.039 50.231 241.919 49.2335 240.959 47.9302C239.999 46.6253 239.229 45.0558 239.251 43.5386L239.253 43.4214L239.192 43.3706C239.762 42.8979 240.322 42.3745 240.863 41.7808C244.983 37.2604 245.942 31.8672 245.352 29.0347Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M21.5581 48.158C22.1375 48.0536 22.7364 48.1839 23.228 48.5183C23.7189 48.8529 24.0635 49.365 24.1792 49.9421C24.4668 51.5581 27.8493 53.5925 30.8735 54.7673C48.4488 60.9848 68.1963 62.3772 87.2935 63.8621C93.1582 64.2506 99.0163 64.5629 104.901 64.8074C117.327 65.3181 129.722 64.9146 142.06 64.9539C148.568 64.9707 155.061 64.8718 161.518 64.5613C164.655 64.4096 167.78 64.2212 170.877 63.9773C187.591 62.5548 204.577 61.0208 220.3 56.5369C221.923 56.0368 223.521 55.4791 224.973 54.8337C225.705 54.5061 226.384 54.1652 226.969 53.7996C227.163 53.6879 228.609 52.2338 228.785 52.0955C228.984 51.9391 229.205 51.8099 229.444 51.7136C230.082 51.4561 230.791 51.4556 231.42 51.7136C232.049 51.9719 232.554 52.4712 232.828 53.1033C233.101 53.7353 233.118 54.4475 232.904 55.0945C231.335 58.3064 229.493 58.9758 227.824 60.1511C226.121 61.1907 224.397 62.0339 222.666 62.8035C219.118 64.2819 215.536 65.5638 211.929 66.6853C211.716 66.7517 211.574 66.9542 211.583 67.1775C212.182 80.6946 208.023 95.099 183.485 96.8943C164.913 98.2528 152.478 88.252 143.087 83.3103C136.901 80.6122 127.4 75.8442 111.651 73.2742C109.236 73.0539 106.821 72.8344 104.406 72.6296C98.4786 72.1244 92.5872 71.5646 86.6821 70.9363C67.2918 68.6063 47.8221 66.7408 28.9341 59.3015C25.6508 57.5546 21.3742 56.3838 19.7241 50.7449C19.6311 50.1634 19.7761 49.5628 20.1196 49.0779C20.4637 48.5931 20.9788 48.2623 21.5581 48.158ZM204.598 68.5232C197.39 68.3156 191.68 69.533 187.511 70.1667C185.479 70.4757 184.365 71.3397 185.288 72.3875C186.779 74.0807 187.207 76.4578 187.446 78.5818C187.472 78.7926 187.494 79.0038 187.511 79.2136C187.539 79.6157 187.392 80.0369 187.133 80.3777C186.873 80.7186 186.522 80.9518 186.128 81.032C185.734 81.1119 185.32 81.0344 184.948 80.822C184.577 80.609 184.278 80.2782 184.146 79.8972C183.014 76.7784 180.033 73.9489 177.807 73.2126C170.084 70.658 151.578 71.801 135.09 71.3162C134.91 71.3109 134.839 71.5471 134.998 71.6335C139.625 74.1594 152.27 80.7986 155.285 82.866C161.375 87.043 171.557 93.4811 184.277 92.5505C202.952 91.1842 207.074 81.0568 206.889 70.8191C206.866 69.562 205.855 68.5594 204.598 68.5232Z"
+                      fill="currentColor"
+                    />
+                  </g>
+                  <defs>
+                    <filter
+                      id="filter0_g_667_5454"
+                      x="24.3305"
+                      y="12.5478"
+                      width="207.315"
+                      height="45.9457"
+                      filterUnits="userSpaceOnUse"
+                      color-interpolation-filters="sRGB"
+                    >
+                      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                      <feBlend
+                        mode="normal"
+                        in="SourceGraphic"
+                        in2="BackgroundImageFix"
+                        result="shape"
+                      />
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.53537994623184204 0.53537994623184204"
+                        numOctaves="3"
+                        seed="7190"
+                      />
+                      <feDisplacementMap
+                        in="shape"
+                        scale="0.90442395210266113"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
+                        result="displacedImage"
+                        width="100%"
+                        height="100%"
+                      />
+                      <feMerge result="effect1_texture_667_5454">
+                        <feMergeNode in="displacedImage" />
+                      </feMerge>
+                    </filter>
+                    <filter
+                      id="filter1_g_667_5454"
+                      x="-6.35386e-05"
+                      y="24.9042"
+                      width="255.09"
+                      height="72.568"
+                      filterUnits="userSpaceOnUse"
+                      color-interpolation-filters="sRGB"
+                    >
+                      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                      <feBlend
+                        mode="normal"
+                        in="SourceGraphic"
+                        in2="BackgroundImageFix"
+                        result="shape"
+                      />
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.53537994623184204 0.53537994623184204"
+                        numOctaves="3"
+                        seed="7190"
+                      />
+                      <feDisplacementMap
+                        in="shape"
+                        scale="0.90442395210266113"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
+                        result="displacedImage"
+                        width="100%"
+                        height="100%"
+                      />
+                      <feMerge result="effect1_texture_667_5454">
+                        <feMergeNode in="displacedImage" />
+                      </feMerge>
+                    </filter>
+                    <clipPath id="clip0_667_5454">
+                      <rect
+                        width="206.41"
+                        height="45.0411"
+                        fill="white"
+                        transform="translate(24.7827 13)"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </Link>
+              <div className="w-24" />
+            </div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <section className="pt-32 pb-16">
+          <div className="container mx-auto px-6 max-w-lg">
+            <div>
+              {/* Title */}
+              <div className="text-center mb-12">
+                <p className="text-xs uppercase tracking-ultra-wide heading2 mb-4">
+                  Complete Your Order
+                </p>
+                <h1 className="font-serif heading2 text-4xl md:text-5xl font-light">
+                  Checkout
+                </h1>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="email"
+                    className="text-xs uppercase heading2 tracking-wide"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-0 py-3 bg-transparent heading2 border-b border-(--color-primary) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                    required
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
+                </div>
+
+                {/* Phone Field */}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="phone"
+                    className="text-xs text-(--color-header1) uppercase tracking-wide"
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+1 (555) 000-0000"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-0 py-3 bg-transparent heading2 border-b border-(--color-primary) placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                    required
+                  />
+                  {errors.phone && (
+                    <p className="text-sm text-destructive">{errors.phone}</p>
+                  )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="button"
+                  onClick={onPlaceOrder}
+                  className="inline-block w-full mt-10 px-8 py-3 primary_btn  text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Processing..." : "Place Order"}
+                </button>
+
+                {/* Info */}
+                <p className="text-xs text-center heading2">
+                  By placing your order, you agree to our terms and conditions.
+                </p>
+              </form>
             </div>
           </div>
         </section>
 
-        <Footer />
+        {/* {open && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-xl">
+              Verify Your Email
+              <button onClick={() => setOpen(false)}>Close</button>
+            </div>
+          </div>
+        )} */}
+        <VerifyEmail
+          open={open}
+          setOpen={setOpen}
+          formData={formData}
+          isSubmitting={isSubmitting}
+          handleVerifyEmail={handleVerifyEmail}
+        />
       </main>
-    </CartProvider>
+    </>
   );
 }

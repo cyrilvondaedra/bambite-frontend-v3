@@ -17,6 +17,9 @@ export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const quantity = 1;
+  const selectedOptions = null;
+
   useEffect(() => {
     const fetchCategories = async () => {
       const response = await fetch(
@@ -50,26 +53,26 @@ export default function MenuPage() {
         </Suspense>
 
         {/* Hero */}
-        <section className="pt-32 pb-12 bg-(--color-background) text-(--color-header1)">
+        <section className="pt-32 pb-12 primary_background">
           <div className="container mx-auto px-6 text-center">
-            <h1 className="font-serif text-(--color-header1) text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-6">
+            <h1 className="font-serif heading text-4xl font-medium leading-tight md:text-5xl lg:text-6xl text-balance mb-6">
               BamBite Menu
             </h1>
-            <p className="text-lg max-w-md mx-auto text-(--color-header1)">
+            <p className="text-lg max-w-md mx-auto sub_heading">
               All the best in one place
             </p>
           </div>
         </section>
 
-        <section className="py-8 border-b border-(--color-border) bg-(--color-secondary)">
+        <section className="py-8 border-b primary_btn secondary_background">
           <div className="container mx-auto px-6">
             <nav className="flex justify-center gap-2 md:gap-4 flex-wrap">
               <button
                 onClick={() => setActiveCategory("all")}
                 className={`px-4 py-2 md:px-6 md:py-3 font-serif text-sm md:text-base transition-all duration-300 border-b-2 ${
                   activeCategory === "all"
-                    ? "border-(--color-primary) text-(--color-primary)"
-                    : "border-transparent text-(--color-body) hover:text-(--color-primary) hover:border-(--color-primary)"
+                    ? "primary_border primary_text"
+                    : "border-transparent heading2"
                 }`}
               >
                 All
@@ -81,8 +84,8 @@ export default function MenuPage() {
                     onClick={() => setActiveCategory(category.id)}
                     className={`px-4 py-2 md:px-6 md:py-3 font-serif text-sm md:text-base transition-all duration-300 border-b-2 ${
                       activeCategory === category.id
-                        ? "border-(--color-primary) text-(--color-primary)"
-                        : "border-transparent text-(--color-body) hover:text-(--color-primary) hover:border-(--color-primary)"
+                        ? "primary_border primary_text"
+                        : "border-transparent sub_heading2"
                     }`}
                   >
                     {category.name}
@@ -93,7 +96,7 @@ export default function MenuPage() {
         </section>
 
         {/* Menu Items Grid */}
-        <section className="py-12 md:py-16 bg-(--color-secondary)">
+        <section className="py-12 md:py-16 secondary_background">
           <div className="container mx-auto px-6">
             <div
               key={activeCategory}
@@ -118,7 +121,7 @@ export default function MenuPage() {
                   menuItems.map((item) => (
                     <div
                       key={item.id}
-                      className="group cursor-pointer flex flex-col h-full bg-(--color-background) p-1 rounded-md"
+                      className="group cursor-pointer flex flex-col h-full card p-1 rounded-md"
                     >
                       <Link
                         href={`/menu/${item.id}`}
@@ -138,24 +141,26 @@ export default function MenuPage() {
                         <div className="flex-1">
                           <Link
                             href={`/menu/${item.id}`}
-                            className="font-serif text-xl mb-2 text-(--color-header1)"
+                            className="font-serif text-xl mb-2 heading"
                           >
                             {item.name}
                           </Link>
-                          <p className="font-serif text-sm mb-2 text-(--color-header1)">
+                          <p className="font-serif text-sm mb-2 heading">
                             {item.thaiName}
                           </p>
-                          <p className="text-(--color-header1) text-sm line-clamp-2">
+                          <p className="heading text-sm line-clamp-2">
                             {item.description}
                           </p>
                         </div>
 
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mt-5 gap-2 md:gap-4">
-                          <span className="font-serif text-lg text-(--color-header1)">
+                          <span className="font-serif text-lg heading">
                             ฿{item.price}
                           </span>
                           <div className="w-full md:w-auto">
-                            <QuantityControls item={item} />
+                            <QuantityControls
+                              item={{ ...item, quantity, selectedOptions }}
+                            />
                           </div>
                         </div>
                       </div>

@@ -1,8 +1,7 @@
 import Header from "@/components/Header";
+import EventBanner from "@/components/EventBanner";
 import HeroSection from "@/components/HeroSection";
-import PhilosophySection from "@/components/PhilosophySection";
 import AboutUs from "@/components/AboutUs";
-import { CartProvider } from "@/components/CartContext";
 import MenuSection from "@/components/MenuSection";
 import FranchiseSection from "@/components/FranchiseSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -13,21 +12,19 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <CartProvider>
-      <main className="min-h-screen bg-background">
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header />
-        </Suspense>
-        <HeroSection />
-        {/* <PhilosophySection /> */}
-        <AboutUs/>
-        <MenuSection />
-        <FranchiseSection />
-        <TestimonialsSection />
-        <FaqSection />
-        <ContactUs />
-        <Footer />
-      </main>
-    </CartProvider>
+    <main className="min-h-screen">
+      <Suspense fallback={<div>Loading...</div>}>
+        <Header />
+      </Suspense>
+      <EventBanner />
+      <HeroSection />
+      <AboutUs />
+      <MenuSection />
+      <FranchiseSection />
+      <TestimonialsSection />
+      <FaqSection />
+      <ContactUs />
+      <Footer />
+    </main>
   );
 }

@@ -31,14 +31,14 @@ const values = [
 
 export default function ValuesSection() {
   return (
-    <section className="bg-(--color-foreground) py-24 md:py-32">
+    <section className="card py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div className="mb-16 text-center md:mb-24">
-          <span className="mb-4 inline-block text-sm font-medium uppercase tracking-[0.2em] text-(--color-header1)">
+          <span className="mb-4 inline-block text-sm font-medium uppercase tracking-[0.2em] sub_heading">
             Our Values
           </span>
-          <h2 className="font-serif text-4xl font-medium text-(--color-header2) md:text-5xl">
+          <h2 className="font-serif text-4xl font-medium heading md:text-5xl">
             What We Stand For
           </h2>
         </div>
@@ -82,10 +82,10 @@ function ValueCard({ value ,index}: { value: (typeof values)[0]; index: number }
           isEven ? "lg:col-start-2" : "lg:col-start-1"
         } `}
       >
-        <h3 className="mb-4 font-serif text-3xl font-medium text-(--color-header1) md:text-4xl">
+        <h3 className="mb-4 font-serif text-3xl font-medium sub_heading md:text-4xl">
           {value.title}
         </h3>
-        <p className="text-lg leading-relaxed text-(--color-header2)">
+        <p className="text-lg leading-relaxed body">
           {value.description}
         </p>
       </div>

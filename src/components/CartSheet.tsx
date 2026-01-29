@@ -9,7 +9,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -25,32 +24,33 @@ export default function CartSheet() {
   } = useCart();
 
   const router = useRouter();
+  console.log("items", items);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button
-          className="relative text-(--color-nav) hover:text-(--color-header1) p-2 transition-colors"
+          className="relative nav-link p-2 transition-colors"
           aria-label="Open cart"
         >
           <ShoppingCart className="w-4 h-4 xl:w-5 xl:h-5" />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-(--color-primary) text-(--color-header1) hover:text-(--color-primary) text-xs flex items-center justify-center rounded-full">
+            <span className="absolute -top-1 -right-1 w-5 h-5 primary_btn text-xs flex items-center justify-center rounded-full">
               {totalItems}
             </span>
           )}
         </button>
       </SheetTrigger>
-      <SheetContent className="w-full bg-(--color-header1) sm:max-w-md flex flex-col">
+      <SheetContent className="w-full secondary_background sm:max-w-md flex flex-col">
         <SheetHeader>
-          <SheetTitle className="font-serif text-2xl font-light text-(--color-body)">
+          <SheetTitle className="font-serif text-2xl font-light heading2">
             Your Order
           </SheetTitle>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <ShoppingCart className="w-12 h-12 text-(--color-body) mb-4" />
+            <ShoppingCart className="w-12 h-12 sub_heading2 mb-4" />
             <p className="text-(--color-body)">Your cart is empty</p>
             <p className="text-sm text-(--color-body) mt-2">
               Add items from the menu to get started
@@ -63,7 +63,7 @@ export default function CartSheet() {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 border-b border-border p-4"
+                    className="flex gap-4 border-b primary_border p-4"
                   >
                     <div className="relative w-20 h-20 shrink-0 overflow-hidden">
                       <Image
@@ -74,15 +74,24 @@ export default function CartSheet() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-serif text-lg">{item.title}</h4>
+                      <h4 className="font-serif text-lg heading2">
+                        {item.title}
+                      </h4>
                       <p className="text-sm text-muted-foreground truncate">
+                        {item.thaiName}
+                      </p>
+                      <p className="text-sm heading2 truncate">
                         {item.description}
+                      </p>
+                      <p className="text-sm heading2 truncate mt-2">
+                        {item.selectedOptions &&
+                          `${item.selectedOptions.displayName}: ${item.selectedOptions.value}`}
                       </p>
                       <p className="text-sm font-medium mt-1">฿{item.price}</p>
                     </div>
                     <div className="flex flex-col items-end justify-between">
                       <button
-                        className="p-1 rounded-2xl text-muted-foreground hover:text-foreground transition-colors"
+                        className="p-1 rounded-2xl heading2 hover:text-destructive transition-colors"
                         aria-label="Remove item"
                         onClick={() => removeItem(item.id)}
                       >
@@ -90,7 +99,7 @@ export default function CartSheet() {
                       </button>
                       <div className="flex items-center gap-2">
                         <button
-                          className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary) transition-colors"
+                          className="p-1 border rounded-lg primary_border primary_text hover:text-(--color-foreground) hover:bg-(--color-primary) transition-colors"
                           aria-label="Decrease quantity"
                           onClick={() =>
                             updateQuantity(item.id, item.quantity - 1)
@@ -102,7 +111,7 @@ export default function CartSheet() {
                           {item.quantity}
                         </span>
                         <button
-                          className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-primary-foreground) hover:bg-(--color-primary)  transition-colors"
+                          className="p-1 border rounded-lg primary_border primary_text hover:text-(--color-foreground) hover:bg-(--color-primary) transition-colors"
                           aria-label="Increase quantity"
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)
@@ -117,19 +126,19 @@ export default function CartSheet() {
               </div>
             </div>
 
-            <div className="border-t border-border pt-6 space-y-4 px-5">
+            <div className="border-t primary_border pt-6 space-y-4 px-5">
               <div className="flex justify-between text-lg">
                 <span className="font-serif">Total</span>
                 <span className="font-medium">
                   ฿ {totalPrice.toFixed(2) || 0.0}
                 </span>
               </div>
-              <Button
+              <button
                 onClick={() => router.push("/checkout")}
-                className="w-full bg-(--color-primary-foreground) text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-foreground) border border-(--color-primary) rounded-xl mb-4  py-6 text-sm tracking-wider uppercase"
+                className="w-full primary_btn rounded-xl mb-4 py-4 text-sm tracking-wider uppercase"
               >
                 Proceed to Checkout
-              </Button>
+              </button>
             </div>
           </>
         )}
