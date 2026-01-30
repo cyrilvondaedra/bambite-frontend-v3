@@ -63,7 +63,7 @@ export default function Navigation({
   };
 
   return (
-    <div className="bg-background border-b border-border sticky top-0 z-20">
+    <div className="bg-background border-b border-border sticky top-0 z-20 mt-3">
       <div className="px-4 py-4 flex items-center gap-2">
         {/* Left scroll button */}
         {canScrollLeft && (

@@ -42,7 +42,7 @@ export default function Header({ searchQuery, setSearchQuery, onFilterClick }: H
         </div>
 
         {/* Center logo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-8">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-8 z-50">
           <div className="w-20 h-20 rounded-full bg-orange-500 flex items-center justify-center shadow-lg">
             <span className="text-white text-2xl font-bold">Gqos</span>
           </div>
