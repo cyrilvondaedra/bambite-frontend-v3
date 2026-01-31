@@ -101,13 +101,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     fetchUser();
   }, []);
 
-  //   if (authLoading) {
-  //     return (
-  //       <main className="min-h-screen bg-background flex items-center justify-center">
-  //         <div className="animate-spin h-6 w-6 rounded-full border-2 border_border border-t-transparent" />
-  //       </main>
-  //     );
-  //   }
+    if (authLoading) {
+      return (
+        <main className="min-h-screen bg-background flex items-center justify-center">
+          <div className="animate-spin h-6 w-6 rounded-full border-2 border_border border-t-transparent" />
+        </main>
+      );
+    }
 
 //   const login = async (email: string, password: string) => {
 //     await new Promise((resolve) => setTimeout(resolve, 500));

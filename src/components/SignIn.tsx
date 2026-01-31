@@ -79,7 +79,7 @@ export default function SignIn() {
                   placeholder="Email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none focus:primary_border focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none transition-colors"
                   required
                 />
               </div>
@@ -95,7 +95,7 @@ export default function SignIn() {
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
-                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:primary_border  placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none transition-colors"
                   required
                 />
                 <button
