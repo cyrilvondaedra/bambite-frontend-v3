@@ -23,7 +23,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         
 
         if (themeToApply) {
-          // applyTheme(themeToApply);
+          applyTheme(themeToApply);
         }
       } catch (error) {
         console.error("Failed to load theme:", error);
