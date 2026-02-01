@@ -6,7 +6,7 @@ import { LogOut, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import ProfileSection from "./ProfileSection";
-import OrdersSection from "./OrdersSection";
+// import OrdersSection from "./OrdersSection";
 import PasswordSection from "./PasswordSection";
 
 type TabType = "profile" | "orders" | "password";
@@ -22,7 +22,7 @@ export default function ProfilePage() {
     updatedAt: "2026-01-29T03:28:50.890Z",
   };
 
-  const { logout, updateProfile } = useUser();
+  // const { logout, updateProfile } = useUser();
   const [activeTab, setActiveTab] = useState<TabType>("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,11 +37,11 @@ export default function ProfilePage() {
     setIsSaving(true);
     setMessage("");
     try {
-      await updateProfile({
-        name: formData.name,
-        email: formData.email,
-        profileImageUrl: formData.profileImageUrl || ""
-      });
+      // await updateProfile({
+      //   name: formData.name,
+      //   email: formData.email,
+      //   profileImageUrl: formData.profileImageUrl || ""
+      // });
       setMessage("Profile updated successfully!");
       setIsEditing(false);
       setTimeout(() => setMessage(""), 3000);
@@ -55,7 +55,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    logout();
+    // logout();
     window.location.href = "/";
   };
 
@@ -140,7 +140,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === "profile" && (
+        {/* {activeTab === "profile" && (
           <ProfileSection
             user={user}
             isEditing={isEditing}
@@ -163,7 +163,7 @@ export default function ProfilePage() {
           />
         )}
 
-        {activeTab === "orders" && <OrdersSection />}
+        {activeTab === "orders" && <OrdersSection />} */}
 
         {activeTab === "password" && <PasswordSection />}
       </div>

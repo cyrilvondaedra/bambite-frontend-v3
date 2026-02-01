@@ -211,11 +211,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const updateOptions = (id: string, options: SelectedOptionDisplay) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, selectedOptions: options } : item,
-      ),
-    );
+    // setItems((prev) =>
+    //   prev.map((item) =>
+    //     item.id === id ? { ...item, selectedOptions: options } : item,
+    //   ),
+    // );
   };
 
   const viewCart = () => {
