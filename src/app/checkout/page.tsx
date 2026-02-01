@@ -33,6 +33,7 @@ export default function CheckoutPage() {
 
   const { items } = useCart();
   console.log("checkout", items);
+  console.log("user", user);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -46,6 +47,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     setErrors({});
     setIsSubmitting(true);
+    console.log("handleSubmit");
 
     try {
       const result = checkoutSchema.safeParse(formData);
@@ -126,84 +128,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // const handleVerifyEmail = async () => {
-  //   console.log("handleVerifyEmail");
-
-  //   try {
-  //     const result = checkoutSchema.safeParse(formData);
-
-  //     if (!result.success) {
-  //       const fieldErrors: { email?: string; phone?: string } = {};
-
-  //       result.error.issues.forEach((err) => {
-  //         const field = err.path[0] as keyof typeof fieldErrors;
-  //         fieldErrors[field] = err.message;
-  //       });
-
-  //       setErrors(fieldErrors);
-
-  //       setIsSubmitting(false);
-  //       return;
-  //     }
-
-  //     let accessToken;
-  //     const storedValue = localStorage.getItem("accessToken");
-
-  //     if (!storedValue) return;
-
-  //     try {
-  //       accessToken = JSON.parse(storedValue);
-  //     } catch (error) {
-  //       accessToken = storedValue;
-  //     }
-
-  //     let guestToken;
-
-  //     const storedGuestValue = localStorage.getItem("token");
-
-  //     if (!storedValue) return;
-
-  //     try {
-  //       guestToken = JSON.parse(storedGuestValue);
-  //     } catch (error) {
-  //       guestToken = storedValue;
-  //     }
-  //     const res = await fetch(
-  //       `${process.env.NEXT_PUBLIC_BASE_URL}/auth/send-verification-email`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify({
-  //           email: formData.email,
-  //           ...(guestToken ? guestToken : guestToken),
-  //         }),
-  //       },
-  //     );
-
-  //     const data = await res.json();
-  //     console.log("Verification sent:", data);
-
-  //     if (!res.ok) {
-  //       console.log("Res", res);
-
-  //       throw new Error(data.message);
-  //     }
-  //     toast.success(data.message);
-
-  //     setOpen(false);
-  //   } catch (error: any) {
-  //     console.log("error", error);
-  //     toast.error(error.message || "An error occurred. Please try again.");
-  //   }
-  // };
-
   const handleVerifyEmail = async () => {
-    console.log("handleVerifyEmail");
-
     setIsSubmitting(true);
 
     try {
@@ -250,12 +175,12 @@ export default function CheckoutPage() {
           headers: {
             "Content-Type": "application/json",
             ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-            ...(guestToken ? { "X-Guest-Token": guestToken } : {}), // optional if your backend supports it
+            ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
           },
           credentials: "include",
           body: JSON.stringify({
             email: formData.email,
-            ...(guestToken ? { guestToken } : {}), // optional if backend expects it in body
+            ...(guestToken ? { guestToken } : {}),
           }),
         },
       );
@@ -277,7 +202,7 @@ export default function CheckoutPage() {
   };
 
   const onPlaceOrder = (e: React.MouseEvent) => {
-    if (!user) {
+    if (user && !user.emailVerified) {
       setOpen(true);
       return;
     }
