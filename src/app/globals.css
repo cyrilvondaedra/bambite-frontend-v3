@@ -12,7 +12,7 @@
   --popover-foreground: oklch(0.2686 0 0);
   --primary: #BBA07A;
   --primary-foreground: oklch(1.0000 0 0);
-  --logo: #BBA07A;
+  --logo: #fff;
   --secondary: oklch(0.9670 0.0029 264.5419);
   --secondary-foreground: oklch(0.4461 0.0263 256.8018);
   --muted: oklch(0.9846 0.0017 247.8389);
@@ -119,6 +119,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-logo: var(--logo);
   --color-card-foreground: var(--card-foreground);
   --color-title: var(--title);
   --color-popover: var(--popover);

@@ -44,9 +44,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${_dmSans.variable} ${_playfair.variable}`}>
         <ThemeProvider>
-          <CartProvider>
-            <UserProvider>{children}</UserProvider>
-          </CartProvider>
+          <UserProvider>
+            <CartProvider>{children}</CartProvider>
+          </UserProvider>
         </ThemeProvider>
         <Toaster position="top-center" expand={false} richColors />
       </body>

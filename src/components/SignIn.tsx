@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +13,8 @@ export default function SignIn() {
     email: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -25,6 +28,7 @@ export default function SignIn() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({
             email: form.email,
             password: form.password,
@@ -43,6 +47,15 @@ export default function SignIn() {
         email: "",
         password: "",
       });
+      localStorage.setItem(
+        "accessToken",
+        JSON.stringify(data.data.tokens.accessToken),
+      );
+      localStorage.setItem(
+        "refreshToken",
+        JSON.stringify(data.data.tokens.refreshToken),
+      );
+      router.push("/");
     } catch (error: any) {
       console.log(error);
       toast.error(error.message || "An error occurred. Please try again.");
@@ -70,7 +83,7 @@ export default function SignIn() {
                   placeholder="Email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none focus:primary_border focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none transition-colors"
                   required
                 />
               </div>
@@ -86,7 +99,7 @@ export default function SignIn() {
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
-                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:primary_border  placeholder:text-muted-foreground focus:outline-none focus:border-(--color-primary) transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none transition-colors"
                   required
                 />
                 <button

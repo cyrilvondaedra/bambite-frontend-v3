@@ -56,7 +56,7 @@ export default function Checkout() {
         </Suspense>
 
         {/* Hero */}
-        <section className="pt-32 pb-12 bg-(--color-background) text-(--color-header1)">
+        <section className="pt-32 pb-12 primary_background heading">
           <div className="container mx-auto px-6 text-center">
             <h1 className="font-serif text-2xl md:text-3xl font-semibold mb-8">
               Send us order details to confirm your order

@@ -4,7 +4,7 @@ import Register from "@/components/Register";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartContext";
 import { Suspense } from "react";
-import { fetchMenuItem } from "@/lib/api/menu";
+import { fetchMenuItem } from "@/lib/menu";
 import SearchMenus from "@/components/SearchMenus";
 
 interface Props {

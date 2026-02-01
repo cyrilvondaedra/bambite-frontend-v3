@@ -15,16 +15,16 @@ import { useRouter } from "next/navigation";
 export default function CartSheet() {
   const {
     items,
-    totalItems,
     totalPrice,
     updateQuantity,
     removeItem,
     open,
     setOpen,
+    loading,
   } = useCart();
 
   const router = useRouter();
-  console.log("item", items);
+  console.log("CartSheetitems", items);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -34,9 +34,9 @@ export default function CartSheet() {
           aria-label="Open cart"
         >
           <ShoppingCart className="w-4 h-4 xl:w-5 xl:h-5" />
-          {totalItems > 0 && (
+          {items.length > 0 && (
             <span className="absolute -top-1 -right-1 w-5 h-5 primary_btn text-xs flex items-center justify-center rounded-full">
-              {totalItems}
+              {items.length}
             </span>
           )}
         </button>
@@ -85,19 +85,22 @@ export default function CartSheet() {
                       <p className="text-sm heading2 truncate">
                         {item.description}
                       </p>
-                      {item.selectedOptions.length > 0 &&
-                        item.selectedOptions.map((opt, i) => (
+                      {item.selectedOptionsDisplay !== null &&
+                        item.selectedOptionsDisplay.length > 0 &&
+                        item.selectedOptionsDisplay.map((opt, i) => (
                           <p className="text-sm heading2 truncate mt-2" key={i}>
                             {opt.displayName}: {opt.value}
                           </p>
                         ))}
-                      <p className="text-sm font-medium mt-1">฿{item.price}</p>
+                      <p className="text-sm font-medium mt-1 heading2">
+                        ฿{item.price}
+                      </p>
                     </div>
                     <div className="flex flex-col items-end justify-between">
                       <button
                         className="p-1 rounded-2xl heading2 hover:text-destructive transition-colors"
                         aria-label="Remove item"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId)}
                       >
                         <Trash2 className="w-4 h-4 hover:text-red-500" />
                       </button>
@@ -106,7 +109,7 @@ export default function CartSheet() {
                           className="p-1 border rounded-lg primary_border primary_text hover:text-(--color-foreground) hover:bg-(--color-primary) transition-colors"
                           aria-label="Decrease quantity"
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
+                            updateQuantity(item.productId, item.quantity - 1)
                           }
                         >
                           <Minus className="w-3 h-3" />
@@ -118,7 +121,7 @@ export default function CartSheet() {
                           className="p-1 border rounded-lg primary_border primary_text hover:text-(--color-foreground) hover:bg-(--color-primary) transition-colors"
                           aria-label="Increase quantity"
                           onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
+                            updateQuantity(item.productId, item.quantity + 1)
                           }
                         >
                           <Plus className="w-3 h-3" />
@@ -133,9 +136,13 @@ export default function CartSheet() {
             <div className="border-t primary_border pt-6 space-y-4 px-5">
               <div className="flex justify-between text-lg">
                 <span className="font-serif">Total</span>
-                <span className="font-medium">
-                  ฿ {totalPrice.toFixed(2) || 0.0}
-                </span>
+                {loading ? (
+                  <div className="animate-spin h-6 w-6 rounded-full border-2 sub_heading2 border-t-transparent" />
+                ) : (
+                  <span className="font-medium">
+                    ฿ {totalPrice.toFixed(2) || 0.0}
+                  </span>
+                )}
               </div>
               <button
                 onClick={() => router.push("/checkout")}

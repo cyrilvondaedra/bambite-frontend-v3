@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 "use client";
 
 import Image from "next/image";
 import { useCart } from "@/components/CartContext";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
+=======
+'use client';
+
+import Image from 'next/image';
+import { useCart } from '@/components/CartContext';
+import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
+>>>>>>> restaurant
 
 interface CartSheetProps {
   isOpen: boolean;
@@ -11,8 +20,12 @@ interface CartSheetProps {
 }
 
 export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
+<<<<<<< HEAD
   const { items, removeItem, updateQuantity, totalPrice, clearCart } =
     useCart();
+=======
+  const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
+>>>>>>> restaurant
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   if (!isOpen) return null;
@@ -25,7 +38,14 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
   return (
     <>
       {/* Overlay */}
+<<<<<<< HEAD
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+=======
+      <div
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={onClose}
+      />
+>>>>>>> restaurant
 
       {/* Sheet */}
       <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl max-h-[80vh] overflow-y-auto">
@@ -51,10 +71,14 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
           ) : (
             <div className="space-y-4 mb-8">
               {items.map((item) => (
+<<<<<<< HEAD
                 <div
                   key={item.id}
                   className="flex gap-4 pb-4 border-b border-border last:border-0"
                 >
+=======
+                <div key={item.id} className="flex gap-4 pb-4 border-b border-border last:border-0">
+>>>>>>> restaurant
                   {/* Product Image */}
                   {/* <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-muted">
                     <Image
@@ -68,6 +92,7 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
                   {/* Product Info */}
                   {/* <div className="flex-1 flex flex-col justify-between">
                     <div>
+<<<<<<< HEAD
                       <h3 className="font-semibold text-foreground">
                         {item.name}
                       </h3>
@@ -78,6 +103,12 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                           {item.notes}
                         </p>
+=======
+                      <h3 className="font-semibold text-foreground">{item.name}</h3>
+                      <p className="text-sm text-muted-foreground">₿ {item.price.toFixed(2)}</p>
+                      {item.notes && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{item.notes}</p>
+>>>>>>> restaurant
                       )}
                     </div>
                   </div> */}
@@ -90,9 +121,13 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
                     >
                       <span className="text-sm">−</span>
                     </button>
+<<<<<<< HEAD
                     <span className="w-6 text-center text-sm font-semibold">
                       {item.quantity}
                     </span>
+=======
+                    <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
+>>>>>>> restaurant
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white hover:bg-opacity-90 transition-colors"
@@ -117,12 +152,17 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
           {items.length > 0 && (
             <div className="sticky bottom-0 bg-white border-t border-border pt-4">
               <div className="flex items-center justify-between mb-4 px-0">
+<<<<<<< HEAD
                 <span className="text-lg font-semibold text-foreground">
                   Total
                 </span>
                 <span className="text-2xl font-bold text-primary">
                   ₿ {totalPrice}
                 </span>
+=======
+                <span className="text-lg font-semibold text-foreground">Total</span>
+                <span className="text-2xl font-bold text-primary">₿ {totalPrice}</span>
+>>>>>>> restaurant
               </div>
               <button className="w-full py-4 px-6 bg-primary text-white font-bold text-lg rounded-full hover:bg-opacity-90 transition-all">
                 confirm
@@ -136,9 +176,13 @@ export default function CartSheet({ isOpen, onClose }: CartSheetProps) {
       {showClearConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-2xl p-6 max-w-sm mx-4">
+<<<<<<< HEAD
             <h3 className="text-lg font-bold text-foreground mb-6">
               Remove all items from your cart?
             </h3>
+=======
+            <h3 className="text-lg font-bold text-foreground mb-6">Remove all items from your cart?</h3>
+>>>>>>> restaurant
             <div className="flex gap-4">
               <button
                 onClick={() => setShowClearConfirm(false)}

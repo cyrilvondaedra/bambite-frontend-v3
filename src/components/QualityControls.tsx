@@ -1,15 +1,18 @@
 import { MenuItemWithUserSelections } from "@/types/api/menuItem";
 import { useCart } from "@/components/CartContext";
 import { ShoppingCart } from "lucide-react";
+import { useUser } from "@/components/UserContext";
 
 export default function QuantityControls({
   item,
 }: {
   item: MenuItemWithUserSelections;
 }) {
-  const { items, addItem, viewCart } = useCart();
+  const { items, addItem, viewCart, fetchCart } = useCart();
   const cartItem = items.find((i) => i.id === item.id);
   const quantity = cartItem?.quantity || 0;
+
+  const { user } = useUser();
 
   const handleAdd = async () => {
     const firstOpt = item.productOptions?.[0];
@@ -34,6 +37,9 @@ export default function QuantityControls({
       };
     }
 
+    console.log("payload", payload);
+
+    const isGuest = !user;
 
     try {
       const res = await fetch(
@@ -41,28 +47,20 @@ export default function QuantityControls({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          ...(isGuest ? {} : { credentials: "include" as const }),
           body: JSON.stringify(payload),
         },
       );
 
-      if (!res.ok) throw new Error("Failed to add item");
-
       const data = await res.json();
-      
-      localStorage.setItem("token", JSON.stringify(data.data.guestToken));
+      console.log("QCdata", data);
 
-      addItem({
-        id: item.id,
-        title: item.name,
-        description: item.description,
-        price: item.price,
-        quantity: payload.quantity,
-        selectedOptions: item.selectedOptions,
-        thaiName: item.thaiName,
-        image: item.imageUrls[0],
-      });
-    } catch (err) {
-      console.error(err);
+      if (!res.ok) throw new Error(data.message || "Failed to add item");
+
+      localStorage.setItem("token", JSON.stringify(data.data.guestToken));
+      fetchCart();
+    } catch (err: any) {
+      console.error(err.message);
     }
   };
 

@@ -22,7 +22,7 @@ export default function EventBanner() {
   const eventDate = useMemo(() => {
     const date = new Date();
     date.setDate(date.getDate() + 2);
-    date.setHours(19, 30, 0, 0); 
+    date.setHours(19, 30, 0, 0);
     return date;
   }, []);
 
@@ -58,54 +58,48 @@ export default function EventBanner() {
 
   if (!isVisible) return null;
 
+  const isTouch =
+    typeof window !== "undefined" &&
+    window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
   return (
     <section
-      className="fixed top-10 left-0 right-0 w-full py-2 z-50 bg-secondary mt-10"
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
+      className="fixed top-10 left-0 right-0 w-full z-20 xl:z-50 bg-secondary mt-10"
+      onMouseEnter={() => {
+        if (!isTouch) setIsExpanded(true);
+      }}
+      onMouseLeave={() => {
+        if (!isTouch) setIsExpanded(false);
+      }}
+      onClick={() => {
+        if (isTouch) setIsExpanded((v) => !v);
+      }}
     >
-      {/* <div className="px-6 md:px-12 lg:px-20">
-        <div className="relative overflow-hidden rounded-3xl border border_border px-6 py-4 md:py-2">
-          <div className="pointer-events-none absolute inset-0 opacity-20 bg-secondary">
-            <div className="absolute -top-16 -right-10 h-44 w-44 rounded-full bg-[radial-gradient(circle_at_center,var(--color-primary),transparent_70%)]" />
-            <div className="absolute -bottom-20 -left-8 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,var(--color-foreground),transparent_70%)]" />
-          </div>
-
-          <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-[0.35em] sub_heading2">
-                Chef&apos;s Table Event
-              </p>
-              <p className="font-serif text-lg md:text-xl heading2">
-                Winter Tasting Menu · Limited seats
-              </p>
-              <p className="text-sm heading2">
-                Fridays &amp; Saturdays · 6–9 PM
-              </p>
-            </div>
-            <a
-              href="/contact_us"
-              className="inline-flex w-fit items-center justify-center rounded-3xl border border_border px-6 py-2 text-xs uppercase tracking-[0.3em] secondary_btn transition-colors"
-            >
-              Reserve
-            </a>
-          </div>
-        </div>
-      </div> */}
-      <div className="relative flex items-center justify-center py-2.5 px-4">
-        <p className="text-xs md:text-sm heading2 tracking-wide flex items-center gap-2">
+      <div className="relative flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5">
+        <p
+          className="
+      flex flex-wrap items-center justify-center gap-x-2 gap-y-1
+      text-xs sm:text-sm
+      heading2 tracking-wide
+      text-center
+      pr-8
+    "
+        >
           <span className="heading2">{eventTitle}</span>
-          <span className="primary_text">—</span>
-          <span className="font-medium">
+
+          <span className="primary_text hidden sm:inline">—</span>
+
+          <span className="font-medium whitespace-nowrap">
             {timeLeft.days}d {timeLeft.hours}h left
           </span>
-          <ArrowRight size={14} className="ml-1" />
+
+          <ArrowRight size={14} className="hidden sm:inline ml-1" />
         </p>
 
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute right-3 p-1 heading2 transition-colors"
+          className="absolute right-2 sm:right-3 p-1 heading2 transition-colors"
           aria-label="Close banner"
         >
           <X size={14} />
@@ -124,17 +118,11 @@ export default function EventBanner() {
             {/* Countdown */}
             <div className="flex items-center gap-4 md:gap-8">
               <TimeBlock value={timeLeft.days} label="Days" />
-              <span className="heading2 text-2xl font-light">
-                :
-              </span>
+              <span className="heading2 text-2xl font-light">:</span>
               <TimeBlock value={timeLeft.hours} label="Hours" />
-              <span className="heading2 text-2xl font-light">
-                :
-              </span>
+              <span className="heading2 text-2xl font-light">:</span>
               <TimeBlock value={timeLeft.minutes} label="Mins" />
-              <span className="heading2 text-2xl font-light">
-                :
-              </span>
+              <span className="heading2 text-2xl font-light">:</span>
               <TimeBlock value={timeLeft.seconds} label="Secs" />
             </div>
 

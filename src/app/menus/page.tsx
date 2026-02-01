@@ -47,7 +47,7 @@ export default function MenuPage() {
 
   return (
     <CartProvider>
-      <main className="min-h-screen bg-(color-header1)">
+      <main className="min-h-screen primary_background overflow-hidden">
         <Suspense fallback={<div>Loading...</div>}>
           <Header />
         </Suspense>
@@ -64,7 +64,7 @@ export default function MenuPage() {
           </div>
         </section>
 
-        <section className="py-8 border-b primary_btn secondary_background">
+        <section className="py-8 border-b primary_btn secondary_background overflow-hidden">
           <div className="container mx-auto px-6">
             <nav className="flex justify-center gap-2 md:gap-4 flex-wrap">
               <button
@@ -96,7 +96,7 @@ export default function MenuPage() {
         </section>
 
         {/* Menu Items Grid */}
-        <section className="py-12 md:py-16 secondary_background">
+        <section className="py-12 md:py-16 secondary_background overflow-hidden">
           <div className="container mx-auto px-6">
             <div
               key={activeCategory}

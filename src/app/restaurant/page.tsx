@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client';
 
 import { useState } from 'react';
@@ -20,26 +21,69 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       <Header 
+=======
+"use client";
+
+import { useState } from "react";
+import Header from "./components/Header";
+import Navigation from "./components/Navigation";
+import ProductGrid from "./components/ProductGrid";
+import CartSheet from "./components/CartSheet";
+import { useCart } from "@/components/CartContext";
+import { ShoppingCart } from "lucide-react";
+
+export default function Home() {
+  const { totalItems, totalPrice } = useCart();
+  const [activeCategory, setActiveCategory] = useState("Beer & Drink");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+
+  return (
+    <main className="min-h-screen bg-background">
+      <Header
+>>>>>>> restaurant
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onFilterClick={() => setShowFilters(!showFilters)}
       />
+<<<<<<< HEAD
       <Navigation activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
       <div className="px-4 md:px-8 py-8">
         <h2 className="text-2xl font-bold text-foreground mb-6">{activeCategory}</h2>
         <ProductGrid 
+=======
+      <Navigation
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+      />
+      <div className="px-4 md:px-8 py-8">
+        <h2 className="text-2xl font-bold text-foreground mb-6">
+          {activeCategory}
+        </h2>
+        <ProductGrid
+>>>>>>> restaurant
           category={activeCategory}
           searchQuery={searchQuery}
           priceRange={priceRange}
         />
       </div>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> restaurant
       {/* Filter Modal */}
       {showFilters && (
         <div className="fixed inset-0 bg-black/50 flex items-end z-50">
           <div className="bg-white w-full rounded-t-2xl p-6 animate-in slide-in-from-bottom">
             <h3 className="text-xl font-bold text-foreground mb-6">Filters</h3>
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> restaurant
             <div className="mb-6">
               <label className="block text-sm font-semibold text-foreground mb-3">
                 Price Range: ₿{priceRange[0]} - ₿{priceRange[1]}
@@ -49,7 +93,13 @@ export default function Home() {
                 min="0"
                 max="100"
                 value={priceRange[1]}
+<<<<<<< HEAD
                 onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+=======
+                onChange={(e) =>
+                  setPriceRange([priceRange[0], parseInt(e.target.value)])
+                }
+>>>>>>> restaurant
                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
               />
             </div>

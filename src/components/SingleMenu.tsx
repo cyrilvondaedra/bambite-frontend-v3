@@ -29,7 +29,8 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
   const { items, updateQuantity, updateOptions } = useCart();
-  const cartItem = items.find((item) => item.id === menuItem.id);
+  const cartItem = items.find((item) => item.productId === menuItem.id);
+
   const [quantity, setQuantity] = useState(cartItem?.quantity || 1);
   const [selectedOptions, setSelectedOptions] = useState<{
     id: string;
@@ -76,6 +77,7 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
       value: value,
     });
   };
+  console.log("menuItem", menuItem);
 
   return (
     <section className="pt-32 pb-16 primary_background">
@@ -205,25 +207,27 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
             </div>
 
             <div className="flex items-center gap-4 mb-8">
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-foreground) hover:bg-(--color-primary)  transition-colors"
-                  aria-label="Decrease quantity"
-                  onClick={() => decreaseQuantity(menuItem.id)}
-                >
-                  <Minus className="w-3 h-3" />
-                </button>
-                <span className="w-6 sub_heading text-center text-sm">
-                  {quantity}
-                </span>
-                <button
-                  className="p-1 rounded-lg  border border-(--color-primary) text-(--color-primary) hover:text-(--color-foreground) hover:bg-(--color-primary)  transition-colors"
-                  aria-label="Increase quantity"
-                  onClick={() => increaseQuantity(menuItem.id)}
-                >
-                  <Plus className="w-3 h-3" />
-                </button>
-              </div>
+              {items.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    className="p-1 border rounded-lg border-(--color-primary) text-(--color-primary) hover:text-(--color-foreground) hover:bg-(--color-primary)  transition-colors"
+                    aria-label="Decrease quantity"
+                    onClick={() => decreaseQuantity(menuItem.id)}
+                  >
+                    <Minus className="w-3 h-3" />
+                  </button>
+                  <span className="w-6 sub_heading text-center text-sm">
+                    {quantity}
+                  </span>
+                  <button
+                    className="p-1 rounded-lg  border border-(--color-primary) text-(--color-primary) hover:text-(--color-foreground) hover:bg-(--color-primary)  transition-colors"
+                    aria-label="Increase quantity"
+                    onClick={() => increaseQuantity(menuItem.id)}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}

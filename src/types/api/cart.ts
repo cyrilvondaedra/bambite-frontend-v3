@@ -54,7 +54,8 @@ export interface CartItem {
   image: string;
   price: string;
   quantity: number;
-  subtotal: number;
+  subtotal?: number;
 
-  selectedOptions: SelectedOptionDisplay[];
+  selectedOptions: Record<string, string | number>;
+  selectedOptionsDisplay: SelectedOptionDisplay[] | null;
 }

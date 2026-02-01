@@ -6,6 +6,8 @@ import { useState } from "react";
 import { z } from "zod";
 import VerifyEmail from "@/components/VerifyEmailModal";
 import { toast } from "sonner";
+import { useUser } from "@/components/UserContext";
+import { useCart } from "@/components/CartContext";
 
 const checkoutSchema = z.object({
   email: z
@@ -27,6 +29,11 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const { user } = useUser();
+
+  const { items } = useCart();
+  console.log("checkout", items);
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -37,36 +44,91 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     setIsSubmitting(true);
 
-    const result = checkoutSchema.safeParse(formData);
+    try {
+      const result = checkoutSchema.safeParse(formData);
 
-    if (!result.success) {
-      const fieldErrors: { email?: string; phone?: string } = {};
+      if (!result.success) {
+        const fieldErrors: { email?: string; phone?: string } = {};
 
-      result.error.issues.forEach((err) => {
-        const field = err.path[0] as keyof typeof fieldErrors;
-        fieldErrors[field] = err.message;
+        for (const issue of result.error.issues) {
+          const field = issue.path[0] as keyof typeof fieldErrors;
+          // keep first message per field (prevents overwriting)
+          if (!fieldErrors[field]) fieldErrors[field] = issue.message;
+        }
+
+        setErrors(fieldErrors);
+        return;
+      }
+
+      const payload = {
+        items: items.map((it) => ({
+          productId: it.productId ?? it.id, // use productId if you have it, fallback to id
+          quantity: it.quantity,
+          selectedOptions: it.selectedOptions ?? {},
+        })),
+        email: result.data.email,
+        phoneNumber: result.data.phone,
+      };
+
+      if (!payload.items.length) {
+        toast.info("Add at least 1 item to Cart.");
+        return;
+      }
+
+      let token;
+      const storedValue = localStorage.getItem("accessToken");
+
+      if (!storedValue) return;
+
+      try {
+        token = JSON.parse(storedValue);
+      } catch (error) {
+        token = storedValue;
+      }
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
       });
 
-      setErrors(fieldErrors);
+      if (!res.ok) {
+        let data: any = null;
+        try {
+          data = await res.json();
+        } catch {
+          // ignore JSON parse errors
+        }
+
+        if (data?.errors) {
+          setErrors({
+            email: data.errors.email,
+            phone: data.errors.phoneNumber,
+          });
+          return;
+        }
+        console.log("checkout data", data);
+        throw new Error(data?.message || `Checkout failed (${res.status})`);
+      }
+      router.push("/order_success");
+    } catch (err: any) {
+      console.error(err);
+      toast(err.message);
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // toast({
-    //   title: "Order Placed",
-    //   description: "Thank you for your order! We'll contact you shortly.",
-    // });
-
-    setIsSubmitting(false);
-    router.push("/order_success");
   };
 
   const handleVerifyEmail = async () => {
+    setIsSubmitting(true);
+
     try {
       const result = checkoutSchema.safeParse(formData);
 
@@ -79,47 +141,66 @@ export default function CheckoutPage() {
         });
 
         setErrors(fieldErrors);
-
-        setIsSubmitting(false);
         return;
       }
+
+      // Access token (logged-in users)
+      let accessToken: string | null = null;
+      const storedAccessValue = localStorage.getItem("accessToken");
+      if (storedAccessValue) {
+        try {
+          accessToken = JSON.parse(storedAccessValue);
+        } catch {
+          accessToken = storedAccessValue;
+        }
+      }
+
+      // Guest token (guests)
+      let guestToken: string | null = null;
+      const storedGuestValue = localStorage.getItem("token");
+      if (storedGuestValue) {
+        try {
+          guestToken = JSON.parse(storedGuestValue);
+        } catch {
+          guestToken = storedGuestValue;
+        }
+      }
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/auth/send-verification-email`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+            ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
           },
+          credentials: "include",
           body: JSON.stringify({
             email: formData.email,
-            phone: formData.phone,
+            ...(guestToken ? { guestToken } : {}),
           }),
         },
       );
 
-      const data = await res.json();
-      console.log("Verification sent:", data);
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        console.log("Res", res);
-
-        throw new Error(data.message);
+        throw new Error(data?.message || "Failed to send verification email");
       }
-      toast.success(data.message);
 
+      toast.success(data.message || "Verification email sent");
       setOpen(false);
     } catch (error: any) {
       console.log("error", error);
-      toast.error(error.message || "An error occurred. Please try again.");
+      toast.error(error?.message || "An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const user = false;
-
   const onPlaceOrder = (e: React.MouseEvent) => {
-    console.log("onPlaceOrder");
-
-    if (!user) {
+    if (user && !user.emailVerified) {
       setOpen(true);
       return;
     }
@@ -139,9 +220,9 @@ export default function CheckoutPage() {
                 className="flex items-center gap-2 text-xs uppercase tracking-ultra-wide nav-link transition-colors"
               >
                 <ArrowLeft size={16} />
-                <span className="">Back to Menu</span>
+                <span className="hidden xl:block">Back to Menu</span>
               </Link>
-              <Link href="/" className="w-15 xl:w-40">
+              <Link href="/" className="w-15 xl:w-40 ml-15 xl:ml-0">
                 <svg
                   width="256"
                   height="98"
@@ -207,7 +288,7 @@ export default function CheckoutPage() {
                       filterUnits="userSpaceOnUse"
                       color-interpolation-filters="sRGB"
                     >
-                      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                      <feFlood floodOpacity="0" result="BackgroundImageFix" />
                       <feBlend
                         mode="normal"
                         in="SourceGraphic"
@@ -242,7 +323,7 @@ export default function CheckoutPage() {
                       filterUnits="userSpaceOnUse"
                       color-interpolation-filters="sRGB"
                     >
-                      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                      <feFlood floodOpacity="0" result="BackgroundImageFix" />
                       <feBlend
                         mode="normal"
                         in="SourceGraphic"

@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartContext";
 import SingleMenu from "@/components/SingleMenu";
-import { fetchMenuItem } from "@/lib/api/menu";
+import { fetchMenuItem } from "@/lib/menu";
 
 export default async function MenuItemPage({
   params,

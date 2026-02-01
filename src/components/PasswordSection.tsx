@@ -1,6 +1,5 @@
 'use client'
 
-import { useUser } from './UserContext'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -10,7 +9,7 @@ import { useState } from 'react'
 type Step = 'initial' | 'otp' | 'success'
 
 export default function PasswordChangeSection() {
-  const { requestPasswordReset, changePassword } = useUser()
+  // const { requestPasswordReset, changePassword } = useUser()
   const [step, setStep] = useState<Step>('initial')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
@@ -24,7 +23,7 @@ export default function PasswordChangeSection() {
     setError('')
     setMessage('')
     try {
-      await requestPasswordReset()
+      // await requestPasswordReset()
       setStep('otp')
       setMessage('OTP code has been sent to your email. For demo purposes, check the console.')
     } catch (err) {
@@ -58,7 +57,7 @@ export default function PasswordChangeSection() {
 
     setIsLoading(true)
     try {
-      await changePassword(otpCode, newPassword)
+      // await changePassword(otpCode, newPassword)
       setStep('success')
       setMessage('Password changed successfully!')
       setTimeout(() => {
