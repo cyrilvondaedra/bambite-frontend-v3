@@ -128,7 +128,7 @@ export default function Header() {
             Contact Us
           </Link>
           <Link
-            href="#career"
+            href="/careers"
             className="text-sm tracking-wide nav-link transition-colors"
           >
             Career
@@ -264,7 +264,7 @@ export default function Header() {
               Contact Us
             </Link>
             <Link
-              href="/career"
+              href="/careers"
               className="text-sm tracking-wide nav-link transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
