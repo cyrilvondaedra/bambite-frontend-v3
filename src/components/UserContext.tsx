@@ -100,6 +100,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initAuth = async () => {
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname.includes("/restaurant/table/")
+      ) {
+        setUser(null);
+        setIsLoggedIn(false);
+        setAuthLoading(false);
+        return;
+      }
+
       const success = await fetchUser();
 
       if (!success) {

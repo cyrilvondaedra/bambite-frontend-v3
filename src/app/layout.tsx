@@ -24,6 +24,12 @@ export const metadata: Metadata = {
     apple: "/web-app-manifest-512x512.png",
   },
   keywords: ["restaurant", "bar", "burmese cuisine", "food"],
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   openGraph: {
     title: "BamBite - Your Best Restaurant in Town",
     description:
