@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { FileText } from "lucide-react";
 
 interface TableOrderHeaderProps {
   searchQuery: string;
@@ -12,6 +14,11 @@ export default function TableOrderHeader({
   setSearchQuery,
 }: TableOrderHeaderProps) {
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const router = useRouter();
+  const params = useParams();
+  
+  const tableId = params.tableId as string;
+  const sectionId = params.sectionId as string;
 
   return (
     <div className="relative w-full mb-3 md:mb-4">
@@ -74,7 +81,15 @@ export default function TableOrderHeader({
           </div>
         </div>
 
-        <div className="w-11 md:w-12" aria-hidden />
+        <div className="flex items-center gap-2 md:gap-4">
+          <button
+            onClick={() => router.push(`/restaurant/table/${tableId}/section/${sectionId}/orders`)}
+            className="text-foreground hover:bg-muted p-2 md:p-2.5 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation"
+            aria-label="View my orders"
+          >
+            <FileText className="w-5 h-5 md:w-6 md:h-6" />
+          </button>
+        </div>
       </div>
 
       {showSearchInput && (

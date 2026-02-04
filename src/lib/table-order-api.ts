@@ -9,6 +9,7 @@ import type {
   ApiCategory,
   ApiTableCart,
   ApiTableOrder,
+  ApiTableOrdersList,
   ApiResponse,
   ApiProductsMeta,
 } from "@/types/api/table-order";
@@ -284,6 +285,73 @@ export async function fetchTableOrder(
     throw new Error(json.message || "Failed to fetch order");
   }
   return json.data.order;
+}
+
+export async function fetchTableOrders(
+  tableId: string,
+  sectionId: string,
+  status?: string,
+): Promise<ApiTableOrdersList[]> {
+  const query = status ? `?status=${status}` : "";
+  const url = `${getBaseUrl()}/restaurant/tables/${tableId}/orders${query}`;
+  console.log("Fetching table orders from:", url);
+  console.log("With headers:", tableHeaders(sectionId, false));
+  
+  const res = await fetch(url, { headers: tableHeaders(sectionId, false) });
+  
+  console.log("Response status:", res.status);
+  
+  if (res.status === 404 || res.status === 410) {
+    throw new TableSectionError(res.status);
+  }
+  if (res.status === 429) {
+    throw new RateLimitError();
+  }
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    console.error("API error response:", json);
+    throw new Error(json.message || "Failed to fetch orders");
+  }
+  
+  const json: ApiResponse<{ orders: ApiTableOrdersList[] }> = await res.json();
+  console.log("API response:", json);
+  
+  if (json.status !== "success") {
+    throw new Error(json.message || "Failed to fetch orders");
+  }
+  
+  // Handle both nested and direct array responses
+  const ordersData = json.data?.orders || (Array.isArray(json.data) ? json.data : []);
+  console.log("Parsed orders:", ordersData);
+  
+  return ordersData;
+}
+
+export async function fetchRealtimeTableOrders(
+  tableId: string,
+  sectionId: string,
+  status?: string,
+): Promise<ApiTableOrdersList[]> {
+  const query = status ? `?status=${status}` : "";
+  const res = await fetch(
+    `${getBaseUrl()}/realtime/table-section/${tableId}/orders${query}`,
+    { headers: tableHeaders(sectionId, false) },
+  );
+  if (res.status === 404 || res.status === 410) {
+    throw new TableSectionError(res.status);
+  }
+  if (res.status === 429) {
+    throw new RateLimitError();
+  }
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error(json.message || "Failed to fetch orders");
+  }
+  const json: ApiResponse<{ orders: ApiTableOrdersList[] }> = await res.json();
+  if (json.status !== "success" || !json.data?.orders) {
+    throw new Error(json.message || "Failed to fetch orders");
+  }
+  return json.data.orders;
 }
 
 // ─── Error types ─────────────────────────────────────────────────────────────

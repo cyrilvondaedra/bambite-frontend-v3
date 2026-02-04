@@ -129,3 +129,15 @@ export interface ApiProductsMeta {
   limit: number;
   total: number;
 }
+
+// Orders list for table section
+export interface ApiTableOrdersList {
+  id: string;
+  tableId: string;
+  sectionId: string;
+  status: "PENDING" | "CONFIRMED" | "PREPARING" | "READY" | "SERVED" | "CANCELLED";
+  total: string;
+  createdAt: string;
+  updatedAt: string;
+  items: ApiOrderItem[];
+}
