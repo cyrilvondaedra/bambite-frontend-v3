@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUser } from "./UserContext";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +14,8 @@ export default function SignIn() {
     email: "",
     password: "",
   });
+
+  const { fetchUser } = useUser();
 
   const router = useRouter();
 
@@ -33,7 +36,7 @@ export default function SignIn() {
             email: form.email,
             password: form.password,
           }),
-        },
+        }
       );
 
       const data = await res.json();
@@ -49,7 +52,8 @@ export default function SignIn() {
       });
       localStorage.setItem("accessToken", data.data.tokens.accessToken);
       localStorage.setItem("refreshToken", data.data.tokens.refreshToken);
-      router.push("/");
+      router.push("/my_account");
+      fetchUser();
     } catch (error: any) {
       console.log(error);
       toast.error(error.message || "An error occurred. Please try again.");
@@ -77,7 +81,7 @@ export default function SignIn() {
                   placeholder="Email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border focus:outline-none transition-colors"
                   required
                 />
               </div>
@@ -93,7 +97,7 @@ export default function SignIn() {
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
-                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none transition-colors"
+                  className="w-full px-0 py-3 heading bg-transparent border-b primary_border focus:outline-none transition-colors"
                   required
                 />
                 <button

@@ -2,9 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-// import { refreshAuthToken } from "@/lib/api-client";
 import { fetchUserProfile } from "@/lib/user-api";
 import { clearTokens } from "@/lib/auth-token";
+import { toast } from "sonner";
 
 export interface Order {
   id: string;
@@ -53,7 +53,7 @@ interface UserContextType {
   //   orders: Order[];
   //   login: (email: string, password: string) => Promise<void>;
   //   logout: () => void;
-  //   updateProfile: (details: Partial<User>) => Promise<void>;
+  updateProfile: (details: Partial<User>) => Promise<void>;
   //   changePassword: (otpCode: string, newPassword: string) => Promise<void>;
   //   requestPasswordReset: () => Promise<void>;
 }
@@ -174,18 +174,39 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   //     localStorage.removeItem("currentUser");
   //   };
 
-  //   const updateProfile = async (details: Partial<User>) => {
-  //     await new Promise((resolve) => setTimeout(resolve, 500));
-  //     if (!user) throw new Error("No user logged in");
+  const updateProfile = async (details: Partial<User>) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      console.log("details",details);
+      
+      const res = await fetch("/api/auth/user/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken && {
+            Authorization: `Bearer ${accessToken}`,
+          }),
+        },
+        body: JSON.stringify({
+          name: details.name,
+        }),
+      });
 
-  //     const updatedUser = { ...user, ...details };
-  //     setUser(updatedUser);
+      const data = await res.json();
 
-  //     const currentEmail = user.email;
-  //     if (MOCK_USERS[currentEmail]) {
-  //       MOCK_USERS[currentEmail].user = updatedUser;
-  //     }
-  //   };
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to update profile");
+      }
+
+      toast.success(data.message);
+      setUser(data.data.user);
+    } catch (error: any) {
+      console.error("updateProfile failed:", error);
+      toast.error(error.message || "Something went wrong");
+      return false;
+    } finally {
+    }
+  };
 
   //   const requestPasswordReset = async () => {
   //     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -229,7 +250,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         // orders,
         // login,
         // logout,
-        // updateProfile,
+        updateProfile,
         // changePassword,
         // requestPasswordReset,
       }}

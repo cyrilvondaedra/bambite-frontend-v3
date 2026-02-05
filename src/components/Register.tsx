@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +14,8 @@ export default function Register() {
     email: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -31,7 +34,7 @@ export default function Register() {
             email: form.email,
             password: form.password,
           }),
-        },
+        }
       );
 
       const data = await res.json();
@@ -46,6 +49,7 @@ export default function Register() {
         email: "",
         password: "",
       });
+      router.push('/my_account')
     } catch (error: any) {
       console.log(error);
       toast.error(error.message || "An error occurred. Please try again.");

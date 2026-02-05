@@ -6,21 +6,14 @@ import { LogOut, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import ProfileSection from "./ProfileSection";
-// import OrdersSection from "./OrdersSection";
+import OrdersSection from "./OrdersSection";
 import PasswordSection from "./PasswordSection";
+import { toast } from "sonner";
 
 type TabType = "profile" | "orders" | "password";
 
 export default function ProfilePage() {
-  //   const { user, logout, updateProfile } = useUser();
-  const user = {
-    id: "d58bcdbd-d1ea-4f0d-978f-dcf26162e73d",
-    name: "Gerrard",
-    email: "august810.a@gmail.com",
-    profileImageUrl: null,
-    createdAt: "2026-01-29T03:28:50.890Z",
-    updatedAt: "2026-01-29T03:28:50.890Z",
-  };
+  const { user, logout, updateProfile, authLoading } = useUser();
 
   // const { logout, updateProfile } = useUser();
   const [activeTab, setActiveTab] = useState<TabType>("profile");
@@ -31,24 +24,16 @@ export default function ProfilePage() {
     profileImageUrl: user?.profileImageUrl || null,
   });
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
-    setMessage("");
     try {
-      // await updateProfile({
-      //   name: formData.name,
-      //   email: formData.email,
-      //   profileImageUrl: formData.profileImageUrl || ""
-      // });
-      setMessage("Profile updated successfully!");
+      await updateProfile({
+        name: formData.name,
+      });
       setIsEditing(false);
-      setTimeout(() => setMessage(""), 3000);
-    } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : "Failed to update profile",
-      );
+    } catch (error: any) {
+      console.log(error);
     } finally {
       setIsSaving(false);
     }
@@ -60,18 +45,7 @@ export default function ProfilePage() {
   };
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
-            Please log in to view your profile
-          </h1>
-          <Link href="/">
-            <Button>Go Back Home</Button>
-          </Link>
-        </div>
-      </div>
-    );
+    window.location.href = "/";
   }
 
   return (
@@ -89,7 +63,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold heading">My Account</h1>
-              <p className="sub_heading mt-2">{user.email}</p>
+              {user && <p className="sub_heading mt-2">{user.email}</p>}
             </div>
             <Button
               variant="destructive"
@@ -140,12 +114,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Tab Content */}
-        {/* {activeTab === "profile" && (
+        {activeTab === "profile" && user && (
           <ProfileSection
             user={user}
             isEditing={isEditing}
             formData={formData}
-            message={message}
             isSaving={isSaving}
             onEdit={() => setIsEditing(true)}
             onCancel={() => {
@@ -163,7 +136,7 @@ export default function ProfilePage() {
           />
         )}
 
-        {activeTab === "orders" && <OrdersSection />} */}
+        {activeTab === "orders" && <OrdersSection />}
 
         {activeTab === "password" && <PasswordSection />}
       </div>

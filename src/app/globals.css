@@ -325,7 +325,7 @@ html {
   }
 
   input::placeholder {
-    color: var(--color-background);
+    color: var(--color-white);
     opacity: 0.4;
   }
 

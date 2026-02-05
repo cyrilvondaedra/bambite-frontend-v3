@@ -10,7 +10,6 @@ interface ProfileSectionProps {
   user: User;
   isEditing: boolean;
   formData: { name: string; email: string; profileImageUrl: string | null };
-  message: string;
   isSaving: boolean;
   onEdit: () => void;
   onCancel: () => void;
@@ -22,7 +21,6 @@ export default function ProfileSection({
   user,
   isEditing,
   formData,
-  message,
   isSaving,
   onEdit,
   onCancel,
@@ -47,12 +45,6 @@ export default function ProfileSection({
             </Button>
           )}
         </div>
-
-        {message && (
-          <div className="mb-4 p-3 rounded-lg bg-green-100/20 border border-green-200 text-green-700 text-sm">
-            {message}
-          </div>
-        )}
 
         {isEditing ? (
           <div className="space-y-4">
