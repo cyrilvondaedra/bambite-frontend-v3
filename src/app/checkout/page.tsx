@@ -30,13 +30,42 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { user } = useUser();
+  const { user, fetchUser, fetchGuestUser, guestUser } = useUser();
 
   const { items, fetchCart, clearCart } = useCart();
 
+  console.log("user", user);
+  console.log("guestUser", guestUser);
+
   useEffect(() => {
-    fetchCart();
+    if (user) {
+      fetchUser();
+    } else {
+      fetchGuestUser();
+    }
+    const guestToken = localStorage.getItem("token");
+    if (!!user || !!guestToken) {
+      fetchCart();
+    }
   }, []);
+
+  console.log("cehckout", items);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        email: user.email || "",
+        phone: "",
+      });
+      console.log("user", user);
+    } else if (guestUser) {
+      setFormData({
+        email: guestUser.email || "",
+        phone: guestUser.phoneNumber || "",
+      });
+      console.log("guestUser", guestUser);
+    }
+  }, [user, guestUser]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -44,6 +73,142 @@ export default function CheckoutPage() {
     >
   ) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setErrors({});
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     const result = checkoutSchema.safeParse(formData);
+  //     if (!result.success) {
+  //       const fieldErrors: { email?: string; phone?: string } = {};
+  //       for (const issue of result.error.issues) {
+  //         const field = issue.path[0] as keyof typeof fieldErrors;
+  //         if (!fieldErrors[field]) fieldErrors[field] = issue.message;
+  //       }
+  //       setErrors(fieldErrors);
+  //       return;
+  //     }
+
+  //     const payload = {
+  //       items: items.map((it) => ({
+  //         productId: it.productId ?? it.id,
+  //         quantity: it.quantity,
+  //         selectedOptions: it.selectedOptions ?? {},
+  //       })),
+  //       email: result.data.email,
+  //       phoneNumber: result.data.phone,
+  //     };
+
+  //     if (!payload.items.length) {
+  //       toast.info("Add at least 1 item to Cart.");
+  //       return;
+  //     }
+
+  //     const res = await fetchWithAuth(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/orders`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(payload),
+  //       },
+  //       !!user
+  //     );
+
+  //     if (!res.ok) {
+  //       let data: any = null;
+  //       try {
+  //         data = await res.json();
+  //       } catch {
+  //         // ignore JSON parse errors
+  //       }
+
+  //       if (data?.errors) {
+  //         setErrors({
+  //           email: data.errors.email,
+  //           phone: data.errors.phoneNumber,
+  //         });
+  //         return;
+  //       }
+  //       throw new Error(data?.message || `Checkout failed (${res.status})`);
+  //     }
+
+  //     router.push("/order_success");
+  //     clearCart();
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     toast(err.message);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  // const handleVerifyEmail = async () => {
+  //   setIsSubmitting(true);
+  //   try {
+  //     const result = checkoutSchema.safeParse(formData);
+  //     if (!result.success) {
+  //       const fieldErrors: { email?: string; phone?: string } = {};
+  //       result.error.issues.forEach((err) => {
+  //         const field = err.path[0] as keyof typeof fieldErrors;
+  //         fieldErrors[field] = err.message;
+  //       });
+  //       setErrors(fieldErrors);
+  //       return;
+  //     }
+
+  //     // Get guest token for request body
+  //     const guestToken = localStorage.getItem("token");
+
+  //     const res = await fetchWithAuth(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/auth/send-verification-email`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           email: formData.email,
+  //           ...(guestToken ? { guestToken } : {}),
+  //         }),
+  //       },
+  //       !!user
+  //     );
+
+  //     const data = await res.json().catch(() => ({}));
+
+  //     if (!res.ok) {
+  //       throw new Error(data?.message || "Failed to send verification email");
+  //     }
+
+  //     toast.success(data.message || "Verification email sent");
+  //     setOpen(false);
+  //   } catch (error: any) {
+  //     console.log("error", error);
+  //     toast.error(error?.message || "An error occurred. Please try again.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  const buildAuthHeaders = () => {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    if (user) {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+    } else {
+      const guestToken = localStorage.getItem("token");
+      if (guestToken) headers["X-Guest-Token"] = guestToken;
+    }
+
+    return headers;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,26 +243,16 @@ export default function CheckoutPage() {
         return;
       }
 
-      const res = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/orders`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
-        !!user
-      );
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: buildAuthHeaders(),
+        body: JSON.stringify(payload),
+        credentials: user ? "include" : "omit",
+      });
+
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        let data: any = null;
-        try {
-          data = await res.json();
-        } catch {
-          // ignore JSON parse errors
-        }
-
         if (data?.errors) {
           setErrors({
             email: data.errors.email,
@@ -112,7 +267,7 @@ export default function CheckoutPage() {
       clearCart();
     } catch (err: any) {
       console.error(err);
-      toast(err.message);
+      toast(err.message || "Checkout failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -120,46 +275,42 @@ export default function CheckoutPage() {
 
   const handleVerifyEmail = async () => {
     setIsSubmitting(true);
+    setErrors({});
+
     try {
       const result = checkoutSchema.safeParse(formData);
       if (!result.success) {
         const fieldErrors: { email?: string; phone?: string } = {};
-        result.error.issues.forEach((err) => {
-          const field = err.path[0] as keyof typeof fieldErrors;
-          fieldErrors[field] = err.message;
-        });
+        for (const issue of result.error.issues) {
+          const field = issue.path[0] as keyof typeof fieldErrors;
+          fieldErrors[field] = issue.message;
+        }
         setErrors(fieldErrors);
         return;
       }
 
-      // Get guest token for request body
-      const guestToken = localStorage.getItem("token");
-
-      const res = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/send-verification-email`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            ...(guestToken ? { guestToken } : {}),
-          }),
-        },
-        !!user
-      );
+      const res = await fetch("/api/auth/send-verification-email", {
+        method: "POST",
+        headers: buildAuthHeaders(),
+        body: JSON.stringify({ email: formData.email }),
+        credentials: user ? "include" : "omit",
+      });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        // if backend returns field errors, map them
+        if (data?.errors?.email) {
+          setErrors((prev) => ({ ...prev, email: data.errors.email }));
+          return;
+        }
         throw new Error(data?.message || "Failed to send verification email");
       }
 
       toast.success(data.message || "Verification email sent");
       setOpen(false);
     } catch (error: any) {
-      console.log("error", error);
+      console.error("verify email error:", error);
       toast.error(error?.message || "An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

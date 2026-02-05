@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { refreshAuthToken } from "@/lib/api-client";
+import { fetchUserProfile } from "@/lib/user-api";
+import { clearTokens } from "@/lib/auth-token";
 
 export interface Order {
   id: string;
@@ -26,9 +28,27 @@ export interface User {
   updatedAt: string;
 }
 
+export interface GuestUser {
+  id: string;
+  name: string | null;
+  email: string;
+  phoneNumber: string | null;
+
+  emailVerified: boolean;
+  emailVerifiedAt: string | null;
+
+  isGuest: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface UserContextType {
   user: User | null;
+  guestUser: GuestUser | null;
   authLoading: boolean;
+  fetchUser: () => Promise<boolean>;
+  fetchGuestUser: () => Promise<boolean>;
   //   isLoggedIn: boolean;
   //   orders: Order[];
   //   login: (email: string, password: string) => Promise<void>;
@@ -44,54 +64,55 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [guestUser, setGuestUser] = useState<GuestUser | null>(null);
   const router = useRouter();
 
-  const refreshAccessToken = async (): Promise<boolean> => {
+  const fetchUser = async (): Promise<boolean> => {
     try {
-      const success = await refreshAuthToken();
-      return success;
-    } catch (error) {
-      console.error("Token refresh failed:", error);
+      const user = await fetchUserProfile();
+
+      if (!user) {
+        setUser(null);
+        setIsLoggedIn(false);
+        return false;
+      }
+
+      setUser(user);
+      setIsLoggedIn(true);
+      return true;
+    } catch (e) {
+      console.error("Failed to fetch user:", e);
       setUser(null);
       setIsLoggedIn(false);
+      clearTokens();
       return false;
     }
   };
 
-  const fetchUser = async (): Promise<boolean> => {
+  const fetchGuestUser = async (): Promise<boolean> => {
+    const guestToken = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/profile`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/guest/profile`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
           },
-          credentials: "include", // Send cookies
-        },
+        }
       );
 
-      if (res.status === 401) {
-        const refreshed = await refreshAccessToken();
-
-        if (refreshed) {
-          return await fetchUser();
-        }
-        return false;
-      }
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch user");
-      }
-
       const data = await res.json();
-      console.log("user", data);
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to fetch user");
+      }
 
-      setUser(data.data.user);
+      setGuestUser(data.data.user);
       setIsLoggedIn(true);
       return true;
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
+    } catch (error: any) {
+      console.error("Failed to fetch user:", error.message);
       return false;
     }
   };
@@ -125,23 +146,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (!isLoggedIn) return;
 
     // Refresh token every 14 minutes if access token expires in 15 minutes
-    const interval = setInterval(
-      async () => {
-        await refreshAccessToken();
-      },
-      14 * 60 * 1000,
-    ); // 14 minutes
+    const interval = setInterval(async () => {
+      await refreshAccessToken();
+    }, 14 * 60 * 1000); // 14 minutes
 
     return () => clearInterval(interval);
   }, [isLoggedIn]);
-
-  // if (authLoading) {
-  //   return (
-  //     <main className="min-h-screen bg-background flex items-center justify-center">
-  //       <div className="animate-spin h-6 w-6 rounded-full border-2 border_border border-t-transparent" />
-  //     </main>
-  //   );
-  // }
 
   //   const login = async (email: string, password: string) => {
   //     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -212,6 +222,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         authLoading,
+        guestUser,
+        fetchUser,
+        fetchGuestUser,
         // isLoggedIn,
         // orders,
         // login,

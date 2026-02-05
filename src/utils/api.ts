@@ -19,10 +19,10 @@ export async function fetchWithAuth(
     ...options,
     credentials: "include",
   });
-  console.log("accessToken");
+
   if (res.status === 401 || res.status === 403) {
     const accessToken = localStorage.getItem("accessToken");
-    console.log("LocalaccessToken");
+
     if (accessToken) {
       res = await fetch(url, {
         ...options,

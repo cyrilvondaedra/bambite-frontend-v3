@@ -150,48 +150,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // const updateQuantity = async (productId: string, quantity: number) => {
-  //   if (quantity < 1) {
-  //     return;
-  //   }
-
-  //   const prevItems = items;
-  //   setItems((prev) =>
-  //     prev.map((item) =>
-  //       item.productId === productId ? { ...item, quantity } : item
-  //     )
-  //   );
-
-  //   try {
-  //     setLoading(true);
-  //     const res = await fetchWithAuth(
-  //       `${process.env.NEXT_PUBLIC_BASE_URL}/cart/items/${productId}`,
-  //       {
-  //         method: "PUT",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ quantity }),
-  //       },
-  //       !!user
-  //     );
-
-  //     const data = await res.json();
-  //     if (!res.ok) {
-  //       setItems(prevItems);
-  //       throw new Error(data.message || "Failed to update quantity");
-  //     }
-
-  //     await fetchCart();
-  //   } catch (err: any) {
-  //     setItems(prevItems);
-  //     console.error(err.message);
-  //     toast.error(err.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const timersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
@@ -313,7 +271,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
         !!user
       );
-      
+
       const data =
         res.headers.get("content-length") !== "0" ? await res.json() : null;
 
