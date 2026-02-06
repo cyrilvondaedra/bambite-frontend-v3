@@ -47,9 +47,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const pathname = usePathname();
-
-  const token = localStorage.getItem("token");
   const fetchCart = useCallback(async () => {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;

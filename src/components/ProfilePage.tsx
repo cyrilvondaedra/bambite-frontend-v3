@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 type TabType = "profile" | "orders" | "password";
 
 export default function ProfilePage() {
-  const { user, logout, updateProfile, authLoading } = useUser();
+  const { user, logout, updateProfile } = useUser();
 
   const [activeTab, setActiveTab] = useState<TabType>("profile");
   const [isEditing, setIsEditing] = useState(false);
@@ -44,10 +44,6 @@ export default function ProfilePage() {
     await logout();
     router.replace("/");
   };
-
-  if (!user) {
-    window.location.href = "/";
-  }
 
   return (
     <div className="min-h-screen bg-background">
