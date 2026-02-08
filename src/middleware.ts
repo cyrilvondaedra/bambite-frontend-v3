@@ -8,13 +8,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (token && (path === '/my_account')) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+//   if (token && (path === '/my_account')) {
+//     return NextResponse.redirect(new URL('/', request.url));
+//   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/profile/:path*', '/my_account'],
+  matcher: ['/profile/:path*'],
 };

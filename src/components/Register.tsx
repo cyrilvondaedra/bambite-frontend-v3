@@ -5,6 +5,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUser } from "./UserContext";
+import { api } from "@/lib/api";
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +18,8 @@ export default function Register() {
     password: "",
   });
   const [errors, setErrors] = useState<{ phoneNumber?: string }>({});
+
+  const { setAccessToken } = useUser();
 
   const validatePhoneNumber = (raw: string) => {
     const v = raw.trim();
@@ -53,35 +57,28 @@ export default function Register() {
 
       setIsLoading(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email,
-            phoneNumber: form.phoneNumber,
-            password: form.password,
-          }),
-        }
-      );
+      const res = await api(`/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phoneNumber: form.phoneNumber,
+          password: form.password,
+        }),
+      });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to submit form");
-      }
-
-      toast.success("Your have successfully created an account!");
+      toast.success(res.message || "Your have successfully signed in!");
       setForm({
         name: "",
         email: "",
         phoneNumber: "",
         password: "",
       });
+      setAccessToken(res.data.tokens.accessToken);
       router.push("/my_account");
     } catch (error: any) {
       console.log(error);

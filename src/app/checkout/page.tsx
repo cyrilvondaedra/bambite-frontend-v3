@@ -29,22 +29,9 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { user, fetchUser, fetchGuestUser, guestUser } = useUser();
+  const { user } = useUser();
 
-  const { items, fetchCart, clearCart } = useCart();
-
-  useEffect(() => {
-    fetchUser(); 
-    fetchGuestUser();
-  }, []);
-
-  useEffect(() => {
-    const guestToken = localStorage.getItem("token");
-
-    if (user || guestToken) {
-      fetchCart();
-    }
-  }, [user]);
+  const { items, clearCart } = useCart();
 
   useEffect(() => {
     if (user) {
@@ -52,13 +39,14 @@ export default function CheckoutPage() {
         email: user.email || "",
         phone: "",
       });
-    } else if (guestUser) {
-      setFormData({
-        email: guestUser.email || "",
-        phone: guestUser.phoneNumber || "",
-      });
     }
-  }, [user, guestUser]);
+    // else if (guestUser) {
+    //   setFormData({
+    //     email: guestUser.email || "",
+    //     phone: guestUser.phoneNumber || "",
+    //   });
+    // }
+  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -115,29 +103,30 @@ export default function CheckoutPage() {
         toast.info("Add at least 1 item to Cart.");
         return;
       }
+      console.log("payload", payload);
 
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: buildAuthHeaders(),
-        body: JSON.stringify(payload),
-        credentials: user ? "include" : "omit",
-      });
+      // const res = await fetch("/api/orders", {
+      //   method: "POST",
+      //   headers: buildAuthHeaders(),
+      //   body: JSON.stringify(payload),
+      //   credentials: user ? "include" : "omit",
+      // });
 
-      const data = await res.json().catch(() => ({}));
+      // const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
-        if (data?.errors) {
-          setErrors({
-            email: data.errors.email,
-            phone: data.errors.phoneNumber,
-          });
-          return;
-        }
-        throw new Error(data?.message || `Checkout failed (${res.status})`);
-      }
+      // if (!res.ok) {
+      //   if (data?.errors) {
+      //     setErrors({
+      //       email: data.errors.email,
+      //       phone: data.errors.phoneNumber,
+      //     });
+      //     return;
+      //   }
+      //   throw new Error(data?.message || `Checkout failed (${res.status})`);
+      // }
 
-      router.push("/order_success");
-      clearCart();
+      // router.push("/order_success");
+      // clearCart();
     } catch (err: any) {
       console.error(err);
       toast(err.message || "Checkout failed");
@@ -191,10 +180,10 @@ export default function CheckoutPage() {
   };
 
   const onPlaceOrder = (e: React.MouseEvent) => {
-    const guestEmailVerified = !!guestUser?.emailVerified;
+    // const guestEmailVerified = !!guestUser?.emailVerified;
     const userEmailVerified = !!user?.emailVerified;
 
-    if (!userEmailVerified && !guestEmailVerified) {
+    if (!userEmailVerified) {
       setOpen(true);
       return;
     }
@@ -209,13 +198,13 @@ export default function CheckoutPage() {
         <header className="fixed top-0 left-0 right-0 z-50 primary_background backdrop-blur-md">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between">
-              <Link
-                href="/menus"
+              <button
+                onClick={() => router.back()}
                 className="flex items-center gap-2 text-xs uppercase tracking-ultra-wide nav-link transition-colors"
               >
                 <ArrowLeft size={16} />
                 <span className="hidden xl:block">Back to Menu</span>
-              </Link>
+              </button>
               <Link href="/" className="w-15 xl:w-40 ml-15 xl:ml-0">
                 <svg
                   width="256"

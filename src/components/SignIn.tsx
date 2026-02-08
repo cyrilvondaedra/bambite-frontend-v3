@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useUser } from "./UserContext";
+import { api } from "@/lib/api";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +16,7 @@ export default function SignIn() {
     password: "",
   });
 
-  const { fetchUser } = useUser();
+  const { setAccessToken } = useUser();
 
   const router = useRouter();
 
@@ -24,43 +25,32 @@ export default function SignIn() {
       e.preventDefault();
       setIsLoading(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            identifier: form.identifier,
-            password: form.password,
-          }),
-        }
-      );
+      const res = await api(`/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          identifier: form.identifier,
+          password: form.password,
+        }),
+      });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to submit form");
-      }
-
-      toast.success("Your have successfully signed in!");
+      toast.success(res.message || "Your have successfully signed in!");
       setForm({
         identifier: "",
         password: "",
       });
-      localStorage.setItem("accessToken", data.data.tokens.accessToken);
-      localStorage.setItem("refreshToken", data.data.tokens.refreshToken);
+      setAccessToken(res.data.tokens.accessToken);
       router.push("/my_account");
-      fetchUser();
     } catch (error: any) {
       console.log(error);
       toast.error(error.message || "An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <section id="sign-in" className="py-20 px-6 bg-(--color-background)">
@@ -80,7 +70,9 @@ export default function SignIn() {
                   id="identifier"
                   placeholder="Email, phone,or MemberID"
                   value={form.identifier}
-                  onChange={(e) => setForm({ ...form, identifier: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, identifier: e.target.value })
+                  }
                   className="w-full px-0 py-3 heading bg-transparent border-b primary_border focus:outline-none transition-colors"
                   required
                 />

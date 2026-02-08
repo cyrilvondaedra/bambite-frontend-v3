@@ -4,18 +4,20 @@ import { ShoppingCart } from "lucide-react";
 import { useUser } from "@/components/UserContext";
 import { useState } from "react";
 import { CartItem } from "@/types/api/cart";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function QuantityControls({
   item,
 }: {
   item: MenuItemWithUserSelections;
 }) {
-  const { items, viewCart, fetchCart, setItems } = useCart();
+  const { items, viewCart, setItems } = useCart();
   const cartItem = items.find((i) => i.id === item.id);
   const quantity = cartItem?.quantity || 0;
   const [loading, setLoading] = useState(false);
 
-  const { user } = useUser();
+  const { user, accessToken } = useUser();
 
   const handleAdd = async () => {
     setLoading(true);
@@ -71,6 +73,7 @@ export default function QuantityControls({
           })
         : null,
     };
+    const prevItems = items
 
     setItems((prevItems) => {
       const existingIndex = prevItems.findIndex(
@@ -95,32 +98,31 @@ export default function QuantityControls({
     });
     setLoading(false);
 
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (!accessToken && guestToken) {
+      headers["X-Guest-Token"] = guestToken; // guestToken is string here
+    }
+
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/cart/items`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
-          },
-          ...(isGuest ? {} : { credentials: "include" as const }),
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await api(`/api/auth/user/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Failed to add item");
-
-      localStorage.setItem("token", data.data.guestToken);
-      fetchCart();
+      toast.success(res.message)
     } catch (err: any) {
+      toast.error(err.message);
       console.error(err.message);
+      setItems(prevItems);
     }
   };
-
-  console.log("items", items);
 
   return (
     <div className="flex items-center gap-3">

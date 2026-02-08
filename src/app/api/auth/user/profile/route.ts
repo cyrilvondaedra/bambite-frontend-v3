@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from "zod";
 
 const updateProfileSchema = z.object({
@@ -49,4 +49,20 @@ export async function PATCH(req: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function GET(req: NextRequest) {
+	const token = req.headers.get('authorization');
+
+	const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/profile`, {
+		method: 'GET',
+		headers: {
+			Authorization: token || '',
+			cookie: req.headers.get('cookie') || '',
+		},
+		credentials: 'include',
+	});
+
+	const data = await res.json();
+	return NextResponse.json(data, { status: res.status });
 }

@@ -54,7 +54,6 @@ export default function VerifyEmailClient() {
         }
 
         toast.success(data.message || "Email verified");
-        localStorage.setItem("emailVerified", "true");
         router.push("/checkout");
       } catch (err: any) {
         console.error(err);

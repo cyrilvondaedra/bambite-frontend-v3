@@ -24,6 +24,9 @@ export default function CartSheet() {
     deleteLoading,
   } = useCart();
 
+  console.log("CartSheet",items);
+  
+
   const router = useRouter();
 
   return (

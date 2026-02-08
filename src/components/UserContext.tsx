@@ -6,6 +6,8 @@ import { fetchUserProfile } from "@/lib/user-api";
 import { clearTokens } from "@/lib/auth-token";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/utils/api";
+import { api } from "@/lib/api";
+import { useCart } from "./CartContext";
 
 export interface Order {
   id: string;
@@ -49,14 +51,18 @@ export interface GuestUser {
 
 interface UserContextType {
   user: User | null;
-  guestUser: GuestUser | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  // guestUser: GuestUser | null;
   authLoading: boolean;
-  fetchUser: () => Promise<boolean>;
-  fetchGuestUser: () => Promise<boolean>;
+  profileLoading: boolean;
+  // fetchUser: () => Promise<boolean>;
+  // fetchGuestUser: () => Promise<boolean>;
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
   //   isLoggedIn: boolean;
   //   orders: Order[];
   //   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  // logout: () => void;
   updateProfile: (details: Partial<User>) => Promise<void>;
   //   changePassword: (otpCode: string, newPassword: string) => Promise<void>;
   //   requestPasswordReset: () => Promise<void>;
@@ -66,114 +72,123 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [guestUser, setGuestUser] = useState<GuestUser | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const router = useRouter();
 
-  const fetchUser = async (): Promise<boolean> => {
+  // const fetchUser = async (): Promise<boolean> => {
+  //   try {
+  //     const user = await fetchUserProfile();
+
+  //     if (!user) {
+  //       setUser(null);
+  //       setIsLoggedIn(false);
+  //       return false;
+  //     }
+  //     console.log("user", user);
+
+  //     setUser(user);
+  //     setIsLoggedIn(true);
+  //     return true;
+  //   } catch (e) {
+  //     console.error("Failed to fetch user:", e);
+  //     setUser(null);
+  //     setIsLoggedIn(false);
+  //     clearTokens();
+  //     return false;
+  //   }
+  // };
+
+  // const fetchGuestUser = async (): Promise<boolean> => {
+  //   const guestToken = localStorage.getItem("token");
+  //   try {
+  //     const res = await fetch(
+  //       `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/guest/profile`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
+  //         },
+  //       }
+  //     );
+
+  //     const data = await res.json();
+  //     if (!res.ok) {
+  //       throw new Error(data.message || "Failed to fetch user");
+  //     }
+
+  //     setGuestUser(data.data.user);
+  //     setIsLoggedIn(true);
+  //     return true;
+  //   } catch (error: any) {
+  //     console.error("Failed to fetch user:", error.message);
+  //     return false;
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const initAuth = async () => {
+  //     if (
+  //       typeof window !== "undefined" &&
+  //       window.location.pathname.includes("/restaurant/table/")
+  //     ) {
+  //       setUser(null);
+  //       setIsLoggedIn(false);
+  //       setAuthLoading(false);
+  //       return;
+  //     }
+
+  //     const success = await fetchUser();
+
+  //     if (!success) {
+  //       setIsLoggedIn(false);
+  //     }
+
+  //     setAuthLoading(false);
+  //   };
+
+  //   initAuth();
+  // }, []);
+
+  const refresh = async () => {
     try {
-      const user = await fetchUserProfile();
+      const data = await api("/api/auth/refresh-token", { method: "POST" });
 
-      if (!user) {
-        setUser(null);
-        setIsLoggedIn(false);
-        return false;
-      }
-      console.log("user", user);
-
-      setUser(user);
-      setIsLoggedIn(true);
-      return true;
-    } catch (e) {
-      console.error("Failed to fetch user:", e);
-      setUser(null);
-      setIsLoggedIn(false);
-      clearTokens();
-      return false;
-    }
-  };
-
-  const fetchGuestUser = async (): Promise<boolean> => {
-    const guestToken = localStorage.getItem("token");
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/guest/profile`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
-          },
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to fetch user");
-      }
-
-      setGuestUser(data.data.user);
-      setIsLoggedIn(true);
-      return true;
-    } catch (error: any) {
-      console.error("Failed to fetch user:", error.message);
-      return false;
+      setAccessToken(data.data.tokens.accessToken);
+    } catch (err) {
+      console.error("❌ refresh() failed:", err);
+      setAccessToken(null);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (
-        typeof window !== "undefined" &&
-        window.location.pathname.includes("/restaurant/table/")
-      ) {
-        setUser(null);
-        setIsLoggedIn(false);
-        setAuthLoading(false);
-        return;
-      }
-
-      const success = await fetchUser();
-
-      if (!success) {
-        setIsLoggedIn(false);
-      }
-
-      setAuthLoading(false);
-    };
-
-    initAuth();
+    refresh();
   }, []);
 
-  const logout = async () => {
-    try {
-      const res = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/auth/logout`,
-        {
-          method: "POST",
+  useEffect(() => {
+    const fetchUser = async () => {
+      setProfileLoading(true);
+      try {
+        const res = await api("/api/auth/user/profile", {
           headers: {
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
-        },
-        !!user
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to log out");
+        });
+        setUser(res.data.user);
+      } catch {
+        setUser(null);
+      } finally {
+        setProfileLoading(false);
       }
-      toast.success(data.message);
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      setUser(null);
-      setIsLoggedIn(false);
-      router.push("/");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
+    };
+
+    if (accessToken) fetchUser();
+  }, [accessToken]);
 
   const updateProfile = async (details: Partial<User>): Promise<void> => {
     try {
@@ -240,14 +255,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     <UserContext.Provider
       value={{
         user,
+        setUser,
         authLoading,
-        guestUser,
-        fetchUser,
-        fetchGuestUser,
+        profileLoading,
+        // guestUser,
+        // fetchUser,
+        // fetchGuestUser,
+        accessToken,
+        setAccessToken,
         // isLoggedIn,
         // orders,
         // login,
-        logout,
         updateProfile,
         // changePassword,
         // requestPasswordReset,

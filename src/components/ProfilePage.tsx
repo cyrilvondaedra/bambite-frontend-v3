@@ -9,11 +9,15 @@ import ProfileSection from "./ProfileSection";
 import OrdersSection from "./OrdersSection";
 import PasswordSection from "./PasswordSection";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { useCart } from "./CartContext";
+import { toast } from "sonner";
 
 type TabType = "profile" | "orders" | "password";
 
 export default function ProfilePage() {
-  const { user, logout, updateProfile } = useUser();
+  const { user, updateProfile, setAccessToken, setUser } = useUser();
+  const { setItems } = useCart();
 
   const [activeTab, setActiveTab] = useState<TabType>("profile");
   const [isEditing, setIsEditing] = useState(false);
@@ -40,9 +44,16 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    router.replace("/");
+  const logout = async () => {
+    try {
+      const res = await api(`/api/auth/logout`, { method: "POST" });
+      toast.success(res.message);
+    } finally {
+    setItems([]);
+    setAccessToken(null); 
+    setUser(null);
+    router.push("/");
+    }
   };
 
   return (
@@ -64,7 +75,7 @@ export default function ProfilePage() {
             </div>
             <Button
               variant="destructive"
-              onClick={handleLogout}
+              onClick={logout}
               className="flex items-center gap-2"
             >
               <LogOut className="w-4 h-4" />

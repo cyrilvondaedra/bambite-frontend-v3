@@ -16,7 +16,7 @@ import { useUser } from "./UserContext";
 import { fetchWithAuth } from "@/utils/api";
 import { toast } from "sonner";
 import { useRef, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { api } from "@/lib/api";
 
 interface CartContextType {
   items: CartItem[];
@@ -31,7 +31,7 @@ interface CartContextType {
   setOpen: (open: boolean) => void;
   totalItems: number;
   totalPrice: number;
-  fetchCart: () => Promise<void>;
+  // fetchCart: () => Promise<void>;
   loading: boolean;
   deleteLoading: boolean;
 }
@@ -43,76 +43,112 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
-  const { user, authLoading } = useUser();
+  const { user, authLoading, accessToken } = useUser();
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const fetchCart = useCallback(async () => {
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
-      const rawToken =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  // const fetchCart = useCallback(async () => {
+  //   try {
+  //     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
+  //     const rawToken =
+  //       typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-      const guestToken =
-        rawToken &&
-        rawToken.trim() &&
-        rawToken !== "undefined" &&
-        rawToken !== "null"
-          ? rawToken.trim()
-          : null;
+  //     const guestToken =
+  //       rawToken &&
+  //       rawToken.trim() &&
+  //       rawToken !== "undefined" &&
+  //       rawToken !== "null"
+  //         ? rawToken.trim()
+  //         : null;
 
-      const url =
-        !user && guestToken
-          ? `${baseUrl}/cart?guestToken=${encodeURIComponent(guestToken)}`
-          : `${baseUrl}/cart`;
+  //     const url =
+  //       !user && guestToken
+  //         ? `${baseUrl}/cart?guestToken=${encodeURIComponent(guestToken)}`
+  //         : `${baseUrl}/cart`;
 
-      const res = await fetchWithAuth(
-        url,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        },
-        !!user
-      );
+  //     const res = await fetchWithAuth(
+  //       url,
+  //       {
+  //         method: "GET",
+  //         headers: { "Content-Type": "application/json" },
+  //       },
+  //       !!user
+  //     );
 
-      if (!res.ok) return;
+  //     if (!res.ok) return;
 
-      const { data } = await res.json();
+  //     const { data } = await res.json();
 
-      const mappedItems: CartItem[] = data.items.map(
-        (item: CartItemFromBackend) => ({
-          id: item.id,
-          productId: item.productId,
-          title: item.name,
-          description: item.description ?? "",
-          price: item.price,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions || null,
-          selectedOptionsDisplay: item.selectedOptionsDisplay,
-          image: item.imageUrls?.[0] ?? "",
-          thaiName: item.thaiName ?? "",
-          subtotal: item.subtotal,
-        })
-      );
+  //     const mappedItems: CartItem[] = data.items.map(
+  //       (item: CartItemFromBackend) => ({
+  //         id: item.id,
+  //         productId: item.productId,
+  //         title: item.name,
+  //         description: item.description ?? "",
+  //         price: item.price,
+  //         quantity: item.quantity,
+  //         selectedOptions: item.selectedOptions || null,
+  //         selectedOptionsDisplay: item.selectedOptionsDisplay,
+  //         image: item.imageUrls?.[0] ?? "",
+  //         thaiName: item.thaiName ?? "",
+  //         subtotal: item.subtotal,
+  //       })
+  //     );
 
-      setItems(mappedItems);
-      setTotalItems(data.totalItems);
-      setTotalPrice(data.totalPrice);
+  //     setItems(mappedItems);
+  //     setTotalItems(data.totalItems);
+  //     setTotalPrice(data.totalPrice);
 
-      // Save guestToken ONLY if backend returns one and we don't already have a valid one
-      if (!user && !guestToken && data?.guestToken) {
-        localStorage.setItem("token", data.guestToken);
-      }
-    } catch (err) {
-      console.error("Failed to restore cart", err);
-    }
-  }, [user]);
+  //     // Save guestToken ONLY if backend returns one and we don't already have a valid one
+  //     if (!user && !guestToken && data?.guestToken) {
+  //       localStorage.setItem("token", data.guestToken);
+  //     }
+  //   } catch (err) {
+  //     console.error("Failed to restore cart", err);
+  //   }
+  // }, [user]);
+
+  // useEffect(() => {
+  //   if (authLoading) return;
+
+  //   fetchCart();
+  // }, [user]);
 
   useEffect(() => {
-    if (authLoading) return;
+    const fetchCart = async () => {
+      console.log("fetchCart runs");
+      try {
+        const res = await api("/api/auth/user/cart", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const mappedItems: CartItem[] = res.data.items.map(
+          (item: CartItemFromBackend) => ({
+            id: item.id,
+            productId: item.productId,
+            title: item.name,
+            description: item.description ?? "",
+            price: item.price,
+            quantity: item.quantity,
+            selectedOptions: item.selectedOptions || null,
+            selectedOptionsDisplay: item.selectedOptionsDisplay,
+            image: item.imageUrls?.[0] ?? "",
+            thaiName: item.thaiName ?? "",
+            subtotal: item.subtotal,
+          })
+        );
+        console.log("fetchCart res",res);
+        setItems(mappedItems);
+        setTotalItems(res.data.totalItems);
+        setTotalPrice(res.data.totalPrice);
+      } catch {
+        setItems([]);
+      }
+    };
 
-    fetchCart();
-  }, [user]);
+    if (accessToken) fetchCart();
+  }, [accessToken]);
 
   const addItem = (newItem: CartItem) => {
     setItems((prev) => {
@@ -206,16 +242,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (!res.ok)
             throw new Error(data.message || "Failed to update quantity");
 
-          await fetchCart();
+          // await fetchCart();
         } catch (err: any) {
           toast.error(err.message);
-          await fetchCart();
+          // await fetchCart();
         } finally {
           setLoading(false);
         }
       }, 800);
     },
-    [fetchCart, user]
+    [user]
   );
 
   const updateOptions = async (
@@ -252,7 +288,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         throw new Error(data.message || "Failed to update options");
       }
 
-      await fetchCart();
+      // await fetchCart();
     } catch (err: any) {
       setItems(prevItems);
       console.error(err.message);
@@ -315,7 +351,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setOpen,
         totalItems,
         totalPrice,
-        fetchCart,
+        // fetchCart,
         loading,
         deleteLoading,
       }}
