@@ -17,7 +17,7 @@ export default function QuantityControls({
   const quantity = cartItem?.quantity || 0;
   const [loading, setLoading] = useState(false);
 
-  const { user, accessToken } = useUser();
+  const { accessToken, guestToken, setGuestToken } = useUser();
 
   const handleAdd = async () => {
     setLoading(true);
@@ -43,9 +43,6 @@ export default function QuantityControls({
       };
     }
 
-    const isGuest = !user;
-    const guestToken = localStorage.getItem("token");
-
     const optimisticItem: CartItem = {
       id: `temp-${Date.now()}`, // temporary ID
       productId: item.id,
@@ -60,7 +57,7 @@ export default function QuantityControls({
       selectedOptionsDisplay: payload.selectedOptions
         ? Object.entries(payload.selectedOptions).map(([optionId, value]) => {
             const productOption = item.productOptions?.find(
-              (po) => po.optionId === optionId
+              (po) => po.optionId === optionId,
             );
             return {
               id: optionId,
@@ -73,14 +70,14 @@ export default function QuantityControls({
           })
         : null,
     };
-    const prevItems = items
+    const prevItems = items;
 
     setItems((prevItems) => {
       const existingIndex = prevItems.findIndex(
         (cartItem) =>
           cartItem.productId === item.id &&
           JSON.stringify(cartItem.selectedOptions) ===
-            JSON.stringify(payload.selectedOptions)
+            JSON.stringify(payload.selectedOptions),
       );
       if (existingIndex !== -1) {
         const updated = [...prevItems];
@@ -109,14 +106,15 @@ export default function QuantityControls({
     try {
       const res = await api(`/api/auth/user/cart`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         credentials: "include",
         body: JSON.stringify(payload),
       });
 
-      toast.success(res.message)
+      if (!accessToken && !guestToken) {
+        localStorage.setItem("token", res.data.guestToken);
+        setGuestToken(res.data.guestToken);
+      }
     } catch (err: any) {
       toast.error(err.message);
       console.error(err.message);

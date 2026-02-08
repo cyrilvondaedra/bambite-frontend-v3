@@ -25,6 +25,7 @@ export default function CartSheet() {
   } = useCart();
 
   console.log("CartSheet",items);
+  console.log("totalPrice",totalPrice);
   
 
   const router = useRouter();

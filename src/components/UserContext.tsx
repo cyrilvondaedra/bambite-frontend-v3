@@ -59,6 +59,8 @@ interface UserContextType {
   // fetchGuestUser: () => Promise<boolean>;
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
+  guestToken: string | null;
+  setGuestToken: (token: string | null) => void;
   //   isLoggedIn: boolean;
   //   orders: Order[];
   //   login: (email: string, password: string) => Promise<void>;
@@ -76,7 +78,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [profileLoading, setProfileLoading] = useState(false);
   const [guestUser, setGuestUser] = useState<GuestUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [guestToken, setGuestToken] = useState<string | null>(null);
+
   const router = useRouter();
+
+  useEffect(() => {
+    console.log('guest');
+    
+    const token = localStorage.getItem("token");
+    setGuestToken(token);
+  }, []);
+
+  console.log("guestToken",guestToken);
+  
 
   // const fetchUser = async (): Promise<boolean> => {
   //   try {
@@ -190,6 +204,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (accessToken) fetchUser();
   }, [accessToken]);
 
+  useEffect(() => {
+    const fetchGuestUser = async () => {
+      setProfileLoading(true);
+      try {
+        const headers: HeadersInit = {};
+
+        if (guestToken) {
+          headers["X-Guest-Token"] = guestToken;
+        }
+        const res = await api("/api/auth/user/guest/profile", {
+          headers,
+        });
+        setUser(res.data.user);
+      } catch {
+        setUser(null);
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    if (guestToken) fetchGuestUser();
+  }, [guestToken]);
+
   const updateProfile = async (details: Partial<User>): Promise<void> => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -263,6 +300,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         // fetchGuestUser,
         accessToken,
         setAccessToken,
+        guestToken,
+        setGuestToken,
         // isLoggedIn,
         // orders,
         // login,

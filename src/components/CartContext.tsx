@@ -21,7 +21,6 @@ import { api } from "@/lib/api";
 interface CartContextType {
   items: CartItem[];
   setItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
-  addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   updateOptions: (id: string, options: SelectedOptionDisplay) => void;
@@ -43,7 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
-  const { user, authLoading, accessToken } = useUser();
+  const { user, authLoading, accessToken, guestToken } = useUser();
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -114,56 +113,48 @@ export function CartProvider({ children }: { children: ReactNode }) {
   //   fetchCart();
   // }, [user]);
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      console.log("fetchCart runs");
-      try {
-        const res = await api("/api/auth/user/cart", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const mappedItems: CartItem[] = res.data.items.map(
-          (item: CartItemFromBackend) => ({
-            id: item.id,
-            productId: item.productId,
-            title: item.name,
-            description: item.description ?? "",
-            price: item.price,
-            quantity: item.quantity,
-            selectedOptions: item.selectedOptions || null,
-            selectedOptionsDisplay: item.selectedOptionsDisplay,
-            image: item.imageUrls?.[0] ?? "",
-            thaiName: item.thaiName ?? "",
-            subtotal: item.subtotal,
-          })
-        );
-        console.log("fetchCart res",res);
-        setItems(mappedItems);
-        setTotalItems(res.data.totalItems);
-        setTotalPrice(res.data.totalPrice);
-      } catch {
-        setItems([]);
+  const fetchCart = async () => {
+    try {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (accessToken && !guestToken) {
+        headers["Authorization"] = `Bearer ${accessToken}`;
       }
-    };
-
-    if (accessToken) fetchCart();
-  }, [accessToken]);
-
-  const addItem = (newItem: CartItem) => {
-    setItems((prev) => {
-      const existingItem = prev.find((item) => item.id === newItem.id);
-      if (existingItem) {
-        return prev.map((item) =>
-          item.id === newItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+      if (!accessToken && guestToken) {
+        headers["X-Guest-Token"] = guestToken;
       }
 
-      return [...prev, newItem as CartItem];
-    });
+      const res = await api("/api/auth/user/cart", {
+        headers,
+      });
+      const mappedItems: CartItem[] = res.data.items.map(
+        (item: CartItemFromBackend) => ({
+          id: item.id,
+          productId: item.productId,
+          title: item.name,
+          description: item.description ?? "",
+          price: item.price,
+          quantity: item.quantity,
+          selectedOptions: item.selectedOptions || null,
+          selectedOptionsDisplay: item.selectedOptionsDisplay,
+          image: item.imageUrls?.[0] ?? "",
+          thaiName: item.thaiName ?? "",
+          subtotal: item.subtotal,
+        }),
+      );
+      setItems(mappedItems);
+      setTotalItems(res.data.totalItems);
+      setTotalPrice(res.data.totalPrice);
+    } catch {
+      setItems([]);
+    }
   };
+
+  useEffect(() => {
+    fetchCart();
+  }, [accessToken, guestToken]);
 
   const removeItem = async (id: string) => {
     const prevItems = items;
@@ -178,7 +169,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             "Content-Type": "application/json",
           },
         },
-        !!user
+        !!user,
       );
 
       const data = await res.json();
@@ -214,8 +205,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // 1) update UI immediately
       setItems((prev) =>
         prev.map((item) =>
-          item.productId === productId ? { ...item, quantity } : item
-        )
+          item.productId === productId ? { ...item, quantity } : item,
+        ),
       );
 
       // 2) reset timer for this product
@@ -226,39 +217,71 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // 3) call API after user "chills"
       timersRef.current[productId] = setTimeout(async () => {
         try {
-          setLoading(true);
+          const headers: HeadersInit = {
+            "Content-Type": "application/json",
+          };
 
-          const res = await fetchWithAuth(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/cart/items/${productId}`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ quantity }),
-            },
-            !!user
-          );
+          if (!accessToken && guestToken) {
+            headers["X-Guest-Token"] = guestToken;
+          }
 
-          const data = await res.json();
-          if (!res.ok)
-            throw new Error(data.message || "Failed to update quantity");
-
-          // await fetchCart();
+          await api(`/api/auth/user/cart/${productId}`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify({ quantity }),
+          });
         } catch (err: any) {
           toast.error(err.message);
-          // await fetchCart();
-        } finally {
-          setLoading(false);
+          fetchCart();
         }
       }, 800);
     },
-    [user]
+    [accessToken, guestToken],
   );
+
+  useEffect(() => {
+    const total = items.reduce((sum, item) => {
+      return sum + Number(item.price) * item.quantity;
+    }, 0);
+
+    setTotalPrice(total);
+  }, [items]);
 
   const updateOptions = async (
     cartId: string,
-    selectedOptions: SelectedOptionDisplay
+    selectedOptions: SelectedOptionDisplay,
   ) => {
     const prevItems = items;
+
+    // ✅ optimistic UI update
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== cartId) return item;
+
+        // 1) update selectedOptions object
+        const nextSelectedOptions = {
+          ...(item.selectedOptions ?? {}),
+          [selectedOptions.id]: selectedOptions.value,
+        };
+
+        // 2) update selectedOptionsDisplay list (if you show it in UI)
+        const prevDisplay = item.selectedOptionsDisplay ?? [];
+        const idx = prevDisplay.findIndex((o) => o.id === selectedOptions.id);
+
+        const nextDisplay =
+          idx === -1
+            ? [...prevDisplay, selectedOptions]
+            : prevDisplay.map((o) =>
+                o.id === selectedOptions.id ? selectedOptions : o,
+              );
+
+        return {
+          ...item,
+          selectedOptions: nextSelectedOptions,
+          selectedOptionsDisplay: nextDisplay,
+        };
+      }),
+    );
 
     const payload = {
       selectedOptions: {
@@ -267,34 +290,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
 
     try {
-      setLoading(true);
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
 
-      const res = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/cart/items/${cartId}/options`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...payload }),
-        },
-        !!user
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setItems(prevItems);
-        throw new Error(data.message || "Failed to update options");
+      if (!accessToken && guestToken) {
+        headers["X-Guest-Token"] = guestToken;
       }
 
-      // await fetchCart();
+      await api(`/api/auth/user/cart/options/${cartId}`, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ ...payload }),
+      });
     } catch (err: any) {
       setItems(prevItems);
       console.error(err.message);
       toast.error(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -316,7 +328,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             "Content-Type": "application/json",
           },
         },
-        !!user
+        !!user,
       );
 
       const data =
@@ -341,7 +353,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         setItems,
-        addItem,
         removeItem,
         updateQuantity,
         updateOptions,

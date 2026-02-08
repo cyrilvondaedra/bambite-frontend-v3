@@ -69,9 +69,7 @@ export default function TableOrdersPage() {
   // Initial load
   const loadOrders = useCallback(async () => {
     try {
-      console.log("Fetching orders for:", { tableId, sectionId });
       const data = await fetchTableOrders(tableId, sectionId, "all");
-      console.log("Orders received:", data);
       setOrders(data.sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ));
