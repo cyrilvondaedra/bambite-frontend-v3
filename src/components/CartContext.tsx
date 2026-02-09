@@ -32,7 +32,6 @@ interface CartContextType {
   totalPrice: number;
   // fetchCart: () => Promise<void>;
   loading: boolean;
-  deleteLoading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,9 +41,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(false);
-  const { user, authLoading, accessToken, guestToken } = useUser();
+  const { user, accessToken, guestToken } = useUser();
   const [loading, setLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // const fetchCart = useCallback(async () => {
   //   try {
@@ -159,32 +157,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeItem = async (id: string) => {
     const prevItems = items;
 
+    setItems((prev) => prev.filter((item) => item.productId !== id));
+
     try {
-      setDeleteLoading(true);
-      const res = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/cart/items/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        !!user,
-      );
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setItems(prevItems);
-        throw new Error(data.message || "Failed to remove from cart");
+      if (!accessToken && guestToken) {
+        headers["X-Guest-Token"] = guestToken;
       }
-      setItems((prev) => prev.filter((item) => item.productId !== id));
+
+      const res = await api(`api/auth/user/cart/items/${id}`, {
+        method: "DELETE",
+        headers,
+      });
+
+      console.log("res", res);
     } catch (err: any) {
       setItems(prevItems);
       toast.error(err.message);
       console.error(err.message);
-    } finally {
-      setDeleteLoading(false);
     }
   };
 
@@ -364,7 +357,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         totalPrice,
         // fetchCart,
         loading,
-        deleteLoading,
       }}
     >
       {children}

@@ -21,7 +21,7 @@ export default function CartSheet() {
     open,
     setOpen,
     loading,
-    deleteLoading,
+    // deleteLoading,
   } = useCart();
 
   console.log("CartSheet",items);
@@ -46,14 +46,14 @@ export default function CartSheet() {
         </button>
       </SheetTrigger>
       <SheetContent className="w-full secondary_background sm:max-w-md flex flex-col border-none">
-        {deleteLoading && (
+        {/* {deleteLoading && (
           <div className="absolute inset-0 z-50 bg-background/70 backdrop-blur-sm flex items-center justify-center">
             <div className="flex items-center gap-3 rounded-2xl px-4 py-3 border primary_border bg-background shadow-sm">
               <span className="animate-spin h-5 w-5 rounded-full border-2 border_border border-t-transparent" />
               <span className="text-sm heading">Updating your cart…</span>
             </div>
           </div>
-        )}
+        )} */}
         <SheetHeader>
           <SheetTitle className="font-serif text-2xl font-light">
             Your Order
