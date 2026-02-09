@@ -153,6 +153,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (accessToken || guestToken) {
       fetchCart();
+    } else {
+      if (items.length > 0) {
+        setItems([]);
+      }
     }
   }, [accessToken, guestToken]);
 
