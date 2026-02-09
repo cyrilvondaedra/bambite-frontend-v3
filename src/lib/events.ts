@@ -50,7 +50,7 @@ export const events = [
     description:
       "Celebrate love with our curated menu featuring romantic dishes perfect for couples and loved ones. Reservations are limited, so book your table early for this special evening.",
     category: "Holiday",
-    img: "/vd26.avif",
+    img: "/vd26.jpeg",
     featured: true,
     fullDescription:
       "Create unforgettable memories this Valentine's Day. Our special menu features aphrodisiac-inspired dishes crafted with the finest ingredients. The ambiance is set with candlelit tables, soft music, and romantic décor. We offer a multi-course tasting menu paired with carefully selected wines. Each couple receives a complimentary special dessert to celebrate your love.",
