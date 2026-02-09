@@ -94,6 +94,12 @@ export default function Header() {
             Menu
           </Link>
           <Link
+            href="/news"
+            className="text-sm tracking-wide nav-link transition-colors"
+          >
+            News
+          </Link>
+          <Link
             href="/contact_us"
             className="text-sm tracking-wide nav-link transition-colors"
           >

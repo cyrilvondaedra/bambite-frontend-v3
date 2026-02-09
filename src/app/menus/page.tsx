@@ -46,7 +46,6 @@ export default function MenuPage() {
   }, [activeCategory]);
 
   return (
-    <CartProvider>
       <main className="min-h-screen primary_background overflow-hidden">
         <Suspense fallback={<div>Loading...</div>}>
           <Header />
@@ -173,6 +172,5 @@ export default function MenuPage() {
 
         <Footer />
       </main>
-    </CartProvider>
   );
 }

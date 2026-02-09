@@ -151,7 +151,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    fetchCart();
+    if (accessToken || guestToken) {
+      fetchCart();
+    }
   }, [accessToken, guestToken]);
 
   const removeItem = async (id: string) => {

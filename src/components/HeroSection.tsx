@@ -26,12 +26,14 @@ export default function HeroSection() {
             BamBite brings together bold tastes, and the joy of our little
             souls.
           </p>
-          <a
-            href="/menus"
-            className="inline-block secondary_btn border border_border mt-10 px-8 py-3 text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
-          >
-            Order Now
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href="/menus"
+              className="inline-block secondary_btn border border_border mt-10 px-8 py-3 text-sm rounded-3xl tracking-wider uppercase transition-all duration-300"
+            >
+              Order Now
+            </a>
+          </div>
         </div>
       </div>
     </section>
