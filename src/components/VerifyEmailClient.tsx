@@ -24,30 +24,6 @@ export default function VerifyEmailClient() {
 
     (async () => {
       try {
-        // const headers: Record<string, string> = {
-        //   "Content-Type": "application/json",
-        // };
-
-        // // logged-in users: cookie + optional accessToken backup
-        // if (user) {
-        //   const accessToken = localStorage.getItem("accessToken");
-        //   if (accessToken) {
-        //     headers["Authorization"] = `Bearer ${accessToken}`;
-        //   }
-        // } else {
-        //   // guest users (rare but safe to support)
-        //   const guestToken = localStorage.getItem("token");
-        //   if (guestToken) {
-        //     headers["X-Guest-Token"] = guestToken;
-        //   }
-        // }
-
-        // const res = await fetch("/api/auth/user/verify-email", {
-        //   method: "POST",
-        //   headers,
-        //   body: JSON.stringify({ token }),
-        //   credentials: user ? "include" : "omit",
-        // });
         const headers: HeadersInit = {
           "Content-Type": "application/json",
         };
@@ -62,9 +38,11 @@ export default function VerifyEmailClient() {
           credentials: "include",
           body: JSON.stringify({ token }),
         });
-
+        console.log("verify-email",res);
+        
         setUser(res.data);
         toast.success(res.message || "Email verified");
+
         router.push("/checkout");
       } catch (err: any) {
         console.error(err);

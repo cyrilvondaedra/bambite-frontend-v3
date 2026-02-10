@@ -8,6 +8,7 @@ import VerifyEmail from "@/components/VerifyEmailModal";
 import { toast } from "sonner";
 import { useUser } from "@/components/UserContext";
 import { useCart } from "@/components/CartContext";
+import { api } from "@/lib/api";
 
 const checkoutSchema = z.object({
   email: z
@@ -31,7 +32,7 @@ export default function CheckoutPage() {
 
   const { user } = useUser();
 
-  const { items, clearCart } = useCart();
+  const { items } = useCart();
 
   useEffect(() => {
     if (user) {
@@ -51,7 +52,7 @@ export default function CheckoutPage() {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -151,9 +152,17 @@ export default function CheckoutPage() {
         return;
       }
 
-      const res = await fetch("/api/auth/send-verification-email", {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (!accessToken && guestToken) {
+        headers["X-Guest-Token"] = guestToken;
+      }
+
+      const res = await api("/api/auth/send-verification-email", {
         method: "POST",
-        headers: buildAuthHeaders(),
+        headers,
         body: JSON.stringify({ email: formData.email }),
         credentials: user ? "include" : "omit",
       });

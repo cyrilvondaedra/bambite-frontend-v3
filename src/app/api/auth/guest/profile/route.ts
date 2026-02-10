@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const guestToken = req.headers.get("x-guest-token");
-  const cookie = req.headers.get("cookie") ?? "";
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    cookie,
   };
 
   if (guestToken) headers["X-Guest-Token"] = guestToken;
@@ -16,7 +14,6 @@ export async function GET(req: NextRequest) {
     {
       method: "GET",
       headers,
-      credentials: "include",
     },
   );
 
