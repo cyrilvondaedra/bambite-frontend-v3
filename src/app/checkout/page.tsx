@@ -57,22 +57,6 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const buildAuthHeaders = () => {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    if (user) {
-      const accessToken = localStorage.getItem("accessToken");
-      if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
-    } else {
-      const guestToken = localStorage.getItem("token");
-      if (guestToken) headers["X-Guest-Token"] = guestToken;
-    }
-
-    return headers;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -155,10 +139,6 @@ export default function CheckoutPage() {
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
-
-      if (!accessToken && guestToken) {
-        headers["X-Guest-Token"] = guestToken;
-      }
 
       const res = await api("/api/auth/send-verification-email", {
         method: "POST",
