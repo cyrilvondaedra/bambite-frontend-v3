@@ -50,24 +50,35 @@ export default function HeroSection() {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+            className={`absolute inset-0 transition-opacity duration-700 ${
               index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           >
+            {/* Blurred background */}
+            <Image
+              src={slide.image}
+              alt=""
+              fill
+              className="object-cover scale-110 blur-xl"
+              aria-hidden
+            />
+
+            {/* Main image */}
             <Image
               src={slide.image}
               alt={slide.heading}
               fill
-              className="object-cover"
+              className="object-contain"
               priority={index === 0}
             />
+
             <div className="absolute inset-0 bg-black/40" />
           </div>
         ))}
       </div>
 
       {/* Content */}
-      <div className="relative z-20 w-full px-6 md:px-12 lg:px-20">
+      {/* <div className="relative z-20 w-full px-6 md:px-12 lg:px-20">
         <div className="max-w-2xl">
           {slides.map((slide, index) => (
             <div
@@ -81,9 +92,7 @@ export default function HeroSection() {
               <p className="sub_heading text-sm tracking-[0.3em] uppercase mb-4 text-white/90">
                 {slide.subheading}
               </p>
-              <h1
-                className={`heading font-serif text-4xl md:text-6xl lg:text-7xl font-light ${slide.buttonText === "Order Book" ? "leading-[1.6]" : "leading-[1.2]"} text-balance text-white`}
-              >
+              <h1 className="heading font-serif text-4xl md:text-6xl lg:text-7xl font-light leading-[1.2] text-balance text-white">
                 {slide.heading}
               </h1>
               <p className="mt-8 sub_heading max-w-xl leading-relaxed text-white/90">
@@ -105,6 +114,40 @@ export default function HeroSection() {
               >
                 {slide.buttonText}
               </a>
+            ))}
+          </div>
+        </div>
+      </div> */}
+      <div className="relative z-20 w-full px-6 md:px-12 lg:px-20">
+        <div className="max-w-2xl">
+          <div className="relative min-h-100 md:min-h-125">
+            {slides.map((slide, index) => (
+              <div
+                key={slide.id}
+                className={`absolute inset-0 transition-all duration-700 ease-out mt-20 ${
+                  index === currentSlide
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8 pointer-events-none"
+                }`}
+              >
+                <p className="sub_heading text-sm tracking-[0.3em] uppercase mb-4 text-white/90">
+                  {slide.subheading}
+                </p>
+                <h1 className="heading font-serif text-4xl md:text-6xl lg:text-7xl font-light leading-[1.2] md:leading-[1.15] text-balance text-white">
+                  {slide.heading}
+                </h1>
+                <p className="mt-8 sub_heading max-w-xl leading-relaxed text-white/90">
+                  {slide.description}
+                </p>
+                {slide.buttonText && <div className="flex items-center gap-4 mt-10">
+                  <a
+                    href={slide.buttonLink}
+                    className="inline-block secondary_btn border border-white/30 px-8 py-3 text-sm rounded-3xl tracking-wider uppercase transition-all duration-300 hover:bg-white/10 hover:border-white/50 text-white backdrop-blur-sm"
+                  >
+                    {slide.buttonText}
+                  </a>
+                </div>}
+              </div>
             ))}
           </div>
         </div>

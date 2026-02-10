@@ -7,7 +7,7 @@ export const events = [
     description:
       "မန္တလေးမြို့ရောက်ရင် မြင့်မြင့်ခင်ထိုးမုန့် ကို မဝယ်ဖူးသူ၊ မစားဖူးသူဆိုတာ ခပ်ရှားရှားပါ။ နှစ်ပေါင်းများစွာ မြန်မာပြည်အနှံ့ နာမည်ကျော်ကြားခဲ့တဲ့ ဒီအမှတ်တံဆိပ်ကြီးရဲ့ နောက်ကွယ်မှာ ဘယ်လိုခေါင်းဆောင်မှု၊ ဘယ်လိုအတွေးအခေါ်တွေ ရှိနေမလဲဆိုတာ စဉ်းစားမိဖူးပါသလား..?။",
     category: "News",
-    img: "/mmk.jpeg",
+    img: ["/mmk.jpeg"],
     featured: true,
     fullDescription: `မန္တလေးမြို့ရောက်ရင် "မြင့်မြင့်ခင်ထိုးမုန့်" ကို မဝယ်ဖူးသူ၊ မစားဖူးသူဆိုတာ ခပ်ရှားရှားပါ။ နှစ်ပေါင်းများစွာ မြန်မာပြည်အနှံ့ နာမည်ကျော်ကြားခဲ့တဲ့ ဒီအမှတ်တံဆိပ်ကြီးရဲ့ နောက်ကွယ်မှာ ဘယ်လိုခေါင်းဆောင်မှု၊ ဘယ်လိုအတွေးအခေါ်တွေ ရှိနေမလဲဆိုတာ စဉ်းစားမိဖူးပါသလား..?။
 စီးပွားရေးပညာကိုလည်း PhD ဘွဲ့ရသည်အထိ မနားမနေ ကြိုးစားခဲ့သူ။ မိသားစုနဲ့ လုပ်ငန်းခွင်ကို ဟန်ချက်ညီညီ ထိန်းကျောင်းရင်း "အောင်မြင်မှုရဲ့တခြားတစ်ဘက်မှာ"ဘာတွေရှိလဲဆိုတဲ့အကြောင်း လေ့လာရင်း အဓိပ္ပါယ်ဖွင့်ဆိုချင်ခဲ့သူ...။
@@ -45,23 +45,24 @@ export const events = [
   },
   {
     id: 2,
-    title: "Valentine's Day Special",
-    date: "February 14, 2026",
+    title: "Love is in the Air",
+    date: "February 14 - 15, 2026",
     description:
-      "Celebrate love with our curated menu featuring romantic dishes perfect for couples and loved ones. Reservations are limited, so book your table early for this special evening.",
+      "Celebrate sweet moments with our chocolate-flavoured hearty desserts. Indulge in our rich, moist, and irresistible Chocolate Brownie  perfectly crafted for chocolate lovers.",
     category: "Holiday",
-    img: "/vd26.jpeg",
+    img: ["/vd26.jpeg", "/vdmenu1.png", "/vdmenu2.png"],
     featured: true,
     fullDescription:
       "Create unforgettable memories this Valentine's Day. Our special menu features aphrodisiac-inspired dishes crafted with the finest ingredients. The ambiance is set with candlelit tables, soft music, and romantic décor. We offer a multi-course tasting menu paired with carefully selected wines. Each couple receives a complimentary special dessert to celebrate your love.",
     details: {
-      time: "6:00 PM - 10:00 PM",
-      location: "Romantic Room",
-      capacity: "Couples only, 20 tables reserved",
-      specialOffer: "Include complimentary champagne toast with reservation",
+      time: "2:00 PM - 8:00 PM",
+      location: "Alinga Tea & Dining - อลิงกา",
+      locationLink: "https://maps.app.goo.gl/r3uBFu1SD7CmKSgq7",
+    //   capacity: "Couples only, 20 tables reserved",
+    //   specialOffer: "Include complimentary champagne toast with reservation",
     },
-    buttonText: "Book Your Date",
-    buttonLink: "#book-date",
+    // buttonText: "Book Your Date",
+    // buttonLink: "#book-date",
   },
   {
     id: 3,
@@ -70,13 +71,14 @@ export const events = [
     description:
       "Experience our chef's latest creations with our brand new menu. Featuring fresh seasonal ingredients and innovative flavor combinations that will delight your palate.",
     category: "Menu",
-    img: "/forcontact.jpg",
+    img: ["/forcontact.jpg"],
     featured: true,
     fullDescription:
       "Our culinary team has spent months developing an innovative menu that celebrates seasonal ingredients and global flavors. Each dish is a masterpiece, carefully plated and expertly prepared. We've introduced new signature dishes, reimagined classics, and added several plant-based options. The menu reflects our commitment to sustainability and quality.",
     details: {
       time: "10:00 PM - 00:00 AM",
-      location: "183/ Sukhumvit Road, 101/2, Bang Na Nuea, Bang Na, Bangkok 10260",
+      location:
+        "183/ Sukhumvit Road, 101/2, Bang Na Nuea, Bang Na, Bangkok 10260",
       highlights: [
         "Pan-seared scallops with citrus beurre blanc",
         "Heritage breed ribeye with truffle jus",
@@ -96,7 +98,7 @@ export const events = [
     description:
       "Join us for a vibrant celebration featuring traditional performances, festive decorations, and exclusive limited-edition menu items. Enjoy special dishes created to honor this auspicious occasion.",
     category: "Festival",
-    img: "/cny26.jpg",
+    img: ["/cny26.jpg"],
     featured: true,
     fullDescription:
       "Experience the grandeur of Chinese New Year with us! Our restaurant has been beautifully decorated with traditional red lanterns and gold accents. We offer an exclusive menu featuring dishes symbolizing prosperity, wealth, and good fortune. Enjoy live traditional performances, complimentary yuanxiao desserts, and special pricing on selected items throughout the evening.",

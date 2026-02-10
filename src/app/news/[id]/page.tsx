@@ -44,7 +44,7 @@ export default function EventDetailPage() {
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Hero Banner */}
 
-        <div className="relative aspect-video overflow-hidden mb-8">
+        {/* <div className="relative aspect-video overflow-hidden mb-8">
           <Image
             src={event.img}
             alt={event.title}
@@ -52,7 +52,46 @@ export default function EventDetailPage() {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className=" object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        </div>
+        </div> */}
+
+        {event.img.length > 0 ? (
+          <div
+            className={`grid gap-4 mb-8 ${
+              event.img.length === 2
+                ? "grid-cols-1 sm:grid-cols-2"
+                : event.img.length === 3
+                  ? "grid-cols-1 sm:grid-cols-3"
+                  : event.img.length >= 4
+                    ? "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3"
+                    : "grid-cols-1"
+            }`}
+          >
+            {event.img.map((imgSrc, index) => (
+              <div
+                key={index}
+                className="relative w-full overflow-hidden rounded-lg"
+              >
+                <Image
+                  src={imgSrc}
+                  alt={`${event.title} - Image ${index + 1}`}
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-contain transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="relative aspect-video overflow-hidden rounded-lg mb-8">
+            <Image
+              src={event.img[0]}
+              alt={event.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="mb-8">
@@ -160,6 +199,15 @@ export default function EventDetailPage() {
                     Location
                   </p>
                   <p className="text-foreground">{event.details.location}</p>
+                  {event.details.locationLink && (
+                    <a
+                      className="text-blue-400"
+                      href={event.details.locationLink}
+                      target="_blank"
+                    >
+                      {event.details.locationLink}
+                    </a>
+                  )}
                 </div>
               )}
               {event.details.capacity && (
@@ -215,7 +263,7 @@ export default function EventDetailPage() {
 
         {/* CTA Button */}
         <div className="mb-12">
-          {!event.author && (
+          {(!event.author && event.buttonLink) && (
             <button className="w-full rounded-lg primary_btn px-8 py-4 text-lg font-bold">
               {event.buttonText}
             </button>

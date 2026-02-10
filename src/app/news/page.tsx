@@ -70,15 +70,17 @@ export default function NewsPage() {
                 className="group overflow-hidden rounded-lg bg-card transition-all hover:border-secondary hover:shadow-lg"
               >
                 {/* Gradient Banner */}
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={event.img}
-                    alt={event.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+                {event.img.length > 0 && (
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image
+                      src={event.img[0]}
+                      alt={event.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
 
                 {/* Content */}
                 <div className="p-6">
