@@ -4,16 +4,18 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "./UserContext";
+import { api } from "@/lib/api";
 
 export default function VerifyEmailClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { user } = useUser();
+  const { accessToken, guestToken, setUser } = useUser();
 
   useEffect(() => {
     const token = searchParams.get("token");
-
+    console.log("token",token);
+    
     if (!token) {
       toast.error("Invalid verification link");
       setLoading(false);
@@ -22,38 +24,47 @@ export default function VerifyEmailClient() {
 
     (async () => {
       try {
-        const headers: Record<string, string> = {
+        // const headers: Record<string, string> = {
+        //   "Content-Type": "application/json",
+        // };
+
+        // // logged-in users: cookie + optional accessToken backup
+        // if (user) {
+        //   const accessToken = localStorage.getItem("accessToken");
+        //   if (accessToken) {
+        //     headers["Authorization"] = `Bearer ${accessToken}`;
+        //   }
+        // } else {
+        //   // guest users (rare but safe to support)
+        //   const guestToken = localStorage.getItem("token");
+        //   if (guestToken) {
+        //     headers["X-Guest-Token"] = guestToken;
+        //   }
+        // }
+
+        // const res = await fetch("/api/auth/user/verify-email", {
+        //   method: "POST",
+        //   headers,
+        //   body: JSON.stringify({ token }),
+        //   credentials: user ? "include" : "omit",
+        // });
+        const headers: HeadersInit = {
           "Content-Type": "application/json",
         };
 
-        // logged-in users: cookie + optional accessToken backup
-        if (user) {
-          const accessToken = localStorage.getItem("accessToken");
-          if (accessToken) {
-            headers["Authorization"] = `Bearer ${accessToken}`;
-          }
-        } else {
-          // guest users (rare but safe to support)
-          const guestToken = localStorage.getItem("token");
-          if (guestToken) {
-            headers["X-Guest-Token"] = guestToken;
-          }
+        if (!accessToken && guestToken) {
+          headers["X-Guest-Token"] = guestToken;
         }
 
-        const res = await fetch("/api/auth/user/verify-email", {
+        const res = await api(`/api/auth/user/verify-email`, {
           method: "POST",
           headers,
+          credentials: "include",
           body: JSON.stringify({ token }),
-          credentials: user ? "include" : "omit",
         });
 
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          throw new Error(data?.message || "Verification failed");
-        }
-
-        toast.success(data.message || "Email verified");
+        setUser(res.data);
+        toast.success(res.message || "Email verified");
         router.push("/checkout");
       } catch (err: any) {
         console.error(err);
@@ -62,7 +73,7 @@ export default function VerifyEmailClient() {
         setLoading(false);
       }
     })();
-  }, [searchParams, router, user]);
+  }, [searchParams, router, guestToken, accessToken]);
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">

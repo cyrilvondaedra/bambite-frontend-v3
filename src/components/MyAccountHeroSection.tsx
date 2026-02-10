@@ -4,7 +4,7 @@ export default function MyAccountHeroSection() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80')`,
+          backgroundImage: `url('my_account.jpg')`,
         }}
       />
     </section>

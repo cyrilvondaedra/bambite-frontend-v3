@@ -17,7 +17,6 @@ export async function PUT(
   };
 
   if (guestToken) headers["X-Guest-Token"] = guestToken;
-  console.log("guestToken",guestToken);
   
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/cart/items/${productId}`,

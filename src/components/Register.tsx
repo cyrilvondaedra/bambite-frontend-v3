@@ -19,7 +19,7 @@ export default function Register() {
   });
   const [errors, setErrors] = useState<{ phoneNumber?: string }>({});
 
-  const { setAccessToken } = useUser();
+  const { setUser } = useUser();
 
   const validatePhoneNumber = (raw: string) => {
     const v = raw.trim();
@@ -57,7 +57,7 @@ export default function Register() {
 
       setIsLoading(true);
 
-      const res = await api(`/api/auth/login`, {
+      const res = await api(`/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +70,8 @@ export default function Register() {
           password: form.password,
         }),
       });
-
+      console.log("res",res);
+      
       toast.success(res.message || "Your have successfully signed in!");
       setForm({
         name: "",
@@ -78,7 +79,7 @@ export default function Register() {
         phoneNumber: "",
         password: "",
       });
-      setAccessToken(res.data.tokens.accessToken);
+      setUser(res.data.user)
       router.push("/my_account");
     } catch (error: any) {
       console.log(error);

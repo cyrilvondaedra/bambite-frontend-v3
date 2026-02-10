@@ -83,14 +83,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('guest');
-    
+    console.log("guest");
+
     const token = localStorage.getItem("token");
     setGuestToken(token);
   }, []);
 
-  console.log("guestToken",guestToken);
-  
+  console.log("guestToken", guestToken);
 
   // const fetchUser = async (): Promise<boolean> => {
   //   try {
@@ -205,15 +204,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [accessToken]);
 
   useEffect(() => {
+    console.log("fetchGuestUser");
+    
     const fetchGuestUser = async () => {
       setProfileLoading(true);
       try {
-        const headers: HeadersInit = {};
+        const headers: HeadersInit = {
+          "Content-Type": "application/json",
+        };
 
-        if (guestToken) {
+        if (!accessToken && guestToken) {
           headers["X-Guest-Token"] = guestToken;
         }
-        const res = await api("/api/auth/user/guest/profile", {
+
+        const res = await api("/api/auth/guest/profile", {
           headers,
         });
         setUser(res.data.user);
