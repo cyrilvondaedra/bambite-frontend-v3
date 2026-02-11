@@ -30,7 +30,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { user } = useUser();
+  const { user, guestToken, guestUser } = useUser();
 
   const { items } = useCart();
 
@@ -40,14 +40,14 @@ export default function CheckoutPage() {
         email: user.email || "",
         phone: "",
       });
+      if (guestUser) {
+        setFormData({
+          email: guestUser.email || "",
+          phone: "",
+        });
+      }
     }
-    // else if (guestUser) {
-    //   setFormData({
-    //     email: guestUser.email || "",
-    //     phone: guestUser.phoneNumber || "",
-    //   });
-    // }
-  }, [user]);
+  }, [user, guestUser]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -143,22 +143,11 @@ export default function CheckoutPage() {
       const res = await api("/api/auth/send-verification-email", {
         method: "POST",
         headers,
-        body: JSON.stringify({ email: formData.email }),
-        credentials: user ? "include" : "omit",
+        body: JSON.stringify({ email: formData.email, token: guestToken }),
+        credentials: "include",
       });
 
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        // if backend returns field errors, map them
-        if (data?.errors?.email) {
-          setErrors((prev) => ({ ...prev, email: data.errors.email }));
-          return;
-        }
-        throw new Error(data?.message || "Failed to send verification email");
-      }
-
-      toast.success(data.message || "Verification email sent");
+      toast.success(res.message || "Verification email sent");
       setOpen(false);
     } catch (error: any) {
       console.error("verify email error:", error);

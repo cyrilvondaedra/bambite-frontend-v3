@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = (await req.json()) as { email?: string };
+    const { email, token } = (await req.json()) as {
+      email?: string;
+      token: string;
+    };
+    console.log("Gtoken", token);
 
     if (!email) {
       return NextResponse.json(
@@ -20,8 +24,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cookie = req.headers.get("cookie") ?? "";
-    const authorization = req.headers.get("authorization"); // optional Bearer backup
-    const guestToken = req.headers.get("x-guest-token");
+    const authorization = req.headers.get("authorization");
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -29,12 +32,12 @@ export async function POST(req: NextRequest) {
     };
 
     if (authorization) headers["Authorization"] = authorization;
-    if (guestToken) headers["X-Guest-Token"] = guestToken;
 
     const backendBody = {
       email,
-      ...(guestToken ? { guestToken } : {}),
+      token
     };
+    console.log("backendBody", backendBody);
 
     const res = await fetch(`${backendBase}/auth/send-verification-email`, {
       method: "POST",

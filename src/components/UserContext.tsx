@@ -52,11 +52,12 @@ export interface GuestUser {
 interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-  // guestUser: GuestUser | null;
+  guestUser: GuestUser | null;
   authLoading: boolean;
   profileLoading: boolean;
   // fetchUser: () => Promise<boolean>;
-  // fetchGuestUser: () => Promise<boolean>;
+  fetchGuestUser: (tokenOverride?: string) => Promise<void>;
+  setGuestUser: React.Dispatch<React.SetStateAction<GuestUser | null>>;
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
   guestToken: string | null;
@@ -80,91 +81,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [guestToken, setGuestToken] = useState<string | null>(null);
 
-  const router = useRouter();
-
   useEffect(() => {
     console.log("guest");
 
     const token = localStorage.getItem("token");
     setGuestToken(token);
   }, []);
-
-  console.log("guestToken", guestToken);
-
-  // const fetchUser = async (): Promise<boolean> => {
-  //   try {
-  //     const user = await fetchUserProfile();
-
-  //     if (!user) {
-  //       setUser(null);
-  //       setIsLoggedIn(false);
-  //       return false;
-  //     }
-  //     console.log("user", user);
-
-  //     setUser(user);
-  //     setIsLoggedIn(true);
-  //     return true;
-  //   } catch (e) {
-  //     console.error("Failed to fetch user:", e);
-  //     setUser(null);
-  //     setIsLoggedIn(false);
-  //     clearTokens();
-  //     return false;
-  //   }
-  // };
-
-  // const fetchGuestUser = async (): Promise<boolean> => {
-  //   const guestToken = localStorage.getItem("token");
-  //   try {
-  //     const res = await fetch(
-  //       `${process.env.NEXT_PUBLIC_BASE_URL}/auth/user/guest/profile`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
-  //         },
-  //       }
-  //     );
-
-  //     const data = await res.json();
-  //     if (!res.ok) {
-  //       throw new Error(data.message || "Failed to fetch user");
-  //     }
-
-  //     setGuestUser(data.data.user);
-  //     setIsLoggedIn(true);
-  //     return true;
-  //   } catch (error: any) {
-  //     console.error("Failed to fetch user:", error.message);
-  //     return false;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const initAuth = async () => {
-  //     if (
-  //       typeof window !== "undefined" &&
-  //       window.location.pathname.includes("/restaurant/table/")
-  //     ) {
-  //       setUser(null);
-  //       setIsLoggedIn(false);
-  //       setAuthLoading(false);
-  //       return;
-  //     }
-
-  //     const success = await fetchUser();
-
-  //     if (!success) {
-  //       setIsLoggedIn(false);
-  //     }
-
-  //     setAuthLoading(false);
-  //   };
-
-  //   initAuth();
-  // }, []);
 
   const refresh = async () => {
     try {
@@ -203,31 +125,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (accessToken) fetchUser();
   }, [accessToken]);
 
-  useEffect(() => {
-    console.log("fetchGuestUser");
-    
-    const fetchGuestUser = async () => {
-      setProfileLoading(true);
-      try {
-        const headers: HeadersInit = {
-          "Content-Type": "application/json",
-        };
+  const fetchGuestUser = async () => {
+    setProfileLoading(true);
+    try {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
 
-        if (!accessToken && guestToken) {
-          headers["X-Guest-Token"] = guestToken;
-        }
-
-        const res = await api("/api/auth/guest/profile", {
-          headers,
-        });
-        setUser(res.data.user);
-      } catch {
-        setUser(null);
-      } finally {
-        setProfileLoading(false);
+      if (!accessToken && guestToken) {
+        headers["X-Guest-Token"] = guestToken;
       }
-    };
 
+      const res = await api("/api/auth/guest/profile", {
+        headers,
+      });
+      setUser(res.data.user);
+    } catch {
+      setUser(null);
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (guestToken) fetchGuestUser();
   }, [guestToken]);
 
@@ -301,7 +221,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         profileLoading,
         // guestUser,
         // fetchUser,
-        // fetchGuestUser,
+        guestUser,
+        fetchGuestUser,
+        setGuestUser,
         accessToken,
         setAccessToken,
         guestToken,
