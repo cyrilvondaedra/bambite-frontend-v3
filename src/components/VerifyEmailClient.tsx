@@ -10,12 +10,17 @@ export default function VerifyEmailClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { setUser, guestToken, setGuestToken, setAccessToken, fetchGuestUser } =
-    useUser();
+  const {
+    setUser,
+    guestToken,
+    setGuestToken,
+    setAccessToken,
+    fetchGuestUser,
+    setGuestUser,
+  } = useUser();
 
   useEffect(() => {
     const token = searchParams.get("token");
-    console.log("Verifying email with token:", token?.substring(0, 10) + "...");
 
     if (!token) {
       toast.error("Invalid verification link");
@@ -39,6 +44,10 @@ export default function VerifyEmailClient() {
 
         const userData = res?.data?.user ?? res?.data ?? null;
 
+        if (guestToken) {
+          setGuestUser(res?.data?.user);
+        }
+
         setUser(userData);
 
         toast.success(res.message || "Email verified successfully!");
@@ -61,6 +70,7 @@ export default function VerifyEmailClient() {
     setGuestToken,
     setAccessToken,
     fetchGuestUser,
+    setGuestUser,
   ]);
 
   return (
