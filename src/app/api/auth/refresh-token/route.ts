@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
 
 	const response = NextResponse.json(data, { status: res.status });
 
-    console.log("refresh cookie",res.headers.get('set-cookie'));
 	const setCookie = res.headers.get('set-cookie');
 	if (setCookie) {
 		response.headers.set('set-cookie', setCookie);
