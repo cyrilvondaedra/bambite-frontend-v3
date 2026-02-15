@@ -30,7 +30,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { user, guestToken, guestUser } = useUser();
+  const { user, guestToken, guestUser,fetchGuestUser } = useUser();
 
   const { items } = useCart();
 
@@ -48,6 +48,12 @@ export default function CheckoutPage() {
       }
     }
   }, [user, guestUser]);
+
+  useEffect(() => {
+    if (guestToken) {
+      fetchGuestUser();
+    }
+  }, [guestToken]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -177,7 +183,7 @@ export default function CheckoutPage() {
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between">
               <button
-                onClick={() => router.back()}
+                onClick={() => router.push("/menus")}
                 className="flex items-center gap-2 text-xs uppercase tracking-ultra-wide nav-link transition-colors"
               >
                 <ArrowLeft size={16} />

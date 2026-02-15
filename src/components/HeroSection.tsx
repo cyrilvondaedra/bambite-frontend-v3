@@ -1,11 +1,54 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { slides } from "@/lib/heroSlides";
+
+interface HeroSection {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  imageUrl?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  isActive: boolean;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export default function HeroSection() {
+  const [slides, setSlides] = useState<HeroSection[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  // Fetch hero sections from backend
+  useEffect(() => {
+    const fetchHeroSections = async () => {
+      try {
+        // Add cache-busting query parameter and no-cache header
+        const response = await fetch(`/api/hero-sections?t=${Date.now()}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+          },
+        });
+        if (!response.ok) throw new Error("Failed to fetch hero sections");
+        const { data } = await response.json();
+        // Sort by order and filter active ones
+        const activeSlides = data
+          .filter((slide: HeroSection) => slide.isActive)
+          .sort((a: HeroSection, b: HeroSection) => a.order - b.order);
+        setSlides(activeSlides);
+        console.log("data", data);
+      } catch (error) {
+        console.error("Error fetching hero sections:", error);
+        // Fallback to empty slides
+        setSlides([]);
+      }
+    };
+
+    fetchHeroSections();
+  }, []);
 
   const goToSlide = useCallback(
     (index: number) => {
@@ -18,12 +61,12 @@ export default function HeroSection() {
   );
 
   const nextSlide = useCallback(() => {
-    goToSlide((currentSlide + 1) % slides.length);
-  }, [currentSlide, goToSlide]);
+    goToSlide((currentSlide + 1) % (slides.length || 1));
+  }, [currentSlide, goToSlide, slides.length]);
 
   const prevSlide = useCallback(() => {
-    goToSlide((currentSlide - 1 + slides.length) % slides.length);
-  }, [currentSlide, goToSlide]);
+    goToSlide((currentSlide - 1 + (slides.length || 1)) % (slides.length || 1));
+  }, [currentSlide, goToSlide, slides.length]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,7 +99,7 @@ export default function HeroSection() {
           >
             {/* Blurred background */}
             <Image
-              src={slide.image}
+              src={slide.imageUrl || "/placeholder.jpg"}
               alt=""
               fill
               className="object-cover scale-110 blur-xl"
@@ -65,8 +108,8 @@ export default function HeroSection() {
 
             {/* Main image */}
             <Image
-              src={slide.image}
-              alt={slide.heading}
+              src={slide.imageUrl || "/placeholder.jpg"}
+              alt={slide.title}
               fill
               className="object-contain"
               priority={index === 0}
@@ -130,23 +173,29 @@ export default function HeroSection() {
                     : "opacity-0 translate-y-8 pointer-events-none"
                 }`}
               >
-                <p className="sub_heading text-sm tracking-[0.3em] uppercase mb-4 text-white/90">
-                  {slide.subheading}
-                </p>
+                {slide.subtitle && (
+                  <p className="sub_heading text-sm tracking-[0.3em] uppercase mb-4 text-white/90">
+                    {slide.subtitle}
+                  </p>
+                )}
                 <h1 className="heading font-serif text-4xl md:text-6xl lg:text-7xl font-light leading-[1.2] md:leading-[1.15] text-balance text-white">
-                  {slide.heading}
+                  {slide.title}
                 </h1>
-                <p className="mt-8 sub_heading max-w-xl leading-relaxed text-white/90">
-                  {slide.description}
-                </p>
-                {slide.buttonText && <div className="flex items-center gap-4 mt-10">
-                  <a
-                    href={slide.buttonLink}
-                    className="inline-block secondary_btn border border-white/30 px-8 py-3 text-sm rounded-3xl tracking-wider uppercase transition-all duration-300 hover:bg-white/10 hover:border-white/50 text-white backdrop-blur-sm"
-                  >
-                    {slide.buttonText}
-                  </a>
-                </div>}
+                {slide.description && (
+                  <p className="mt-8 sub_heading max-w-xl leading-relaxed text-white/90">
+                    {slide.description}
+                  </p>
+                )}
+                {slide.buttonText && slide.buttonUrl && (
+                  <div className="flex items-center gap-4 mt-10">
+                    <a
+                      href={slide.buttonUrl}
+                      className="inline-block secondary_btn border border-white/30 px-8 py-3 text-sm rounded-3xl tracking-wider uppercase transition-all duration-300 hover:bg-white/10 hover:border-white/50 text-white backdrop-blur-sm"
+                    >
+                      {slide.buttonText}
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </div>

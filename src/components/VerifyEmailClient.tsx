@@ -13,15 +13,12 @@ export default function VerifyEmailClient() {
   const {
     setUser,
     guestToken,
-    setGuestToken,
-    setAccessToken,
-    fetchGuestUser,
     setGuestUser,
   } = useUser();
 
-  useEffect(() => {
-    const token = searchParams.get("token");
+  const token = searchParams.get("token");
 
+  useEffect(() => {
     if (!token) {
       toast.error("Invalid verification link");
       setLoading(false);
@@ -62,16 +59,7 @@ export default function VerifyEmailClient() {
         setLoading(false);
       }
     })();
-  }, [
-    searchParams,
-    router,
-    guestToken,
-    setUser,
-    setGuestToken,
-    setAccessToken,
-    fetchGuestUser,
-    setGuestUser,
-  ]);
+  }, [token]);
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">

@@ -1,13 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { fetchUserProfile } from "@/lib/user-api";
-import { clearTokens } from "@/lib/auth-token";
 import { toast } from "sonner";
-import { fetchWithAuth } from "@/utils/api";
 import { api } from "@/lib/api";
-import { useCart } from "./CartContext";
 
 export interface Order {
   id: string;
@@ -147,10 +142,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  useEffect(() => {
-    if (guestToken) fetchGuestUser();
-  }, [guestToken]);
-
   const updateProfile = async (details: Partial<User>): Promise<void> => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -176,9 +167,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       toast.success(data.message);
       setUser(data.data.user);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("updateProfile failed:", error);
-      toast.error(error.message || "Something went wrong");
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+      toast.error(errorMessage);
     }
   };
 
