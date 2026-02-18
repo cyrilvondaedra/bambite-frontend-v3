@@ -174,9 +174,9 @@ export default function Footer() {
                   target="_blank"
                   className="transition-colors"
                 >
-                  <span className="font-bold">Pathuwan</span>
+                  <span className="font-bold">Pathumwan</span>
                   <br />
-                  169 Rama VI Soi 7, Khwaeng Rong Muang, Pathum Wan, Krung Thep
+                  169 Rama VI Soi 7, Khwaeng Rong Muang, Pathumwan, Krung Thep
                   Maha Nakhon, Bangkok 10330
                 </a>
               </li>

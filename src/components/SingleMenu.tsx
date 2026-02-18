@@ -38,6 +38,23 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
     value: string;
   } | null>(null);
 
+  // Zoom state
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPosition({ x, y });
+  };
+
+  const handleMouseEnter = () => setIsZoomed(true);
+  const handleMouseLeave = () => {
+    setIsZoomed(false);
+    setZoomPosition({ x: 50, y: 50 });
+  };
+
   const decreaseQuantity = (id: string) => {
     if (quantity <= 1) {
       return;
@@ -91,12 +108,21 @@ export default function SingleMenu({ menuItem }: SingleMenuProps) {
           {/* Left Side - Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative w-full h-105 secondary_background rounded-lg overflow-hidden">
+            <div 
+              className="relative w-full h-105 secondary_background rounded-lg overflow-hidden cursor-zoom-in"
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <Image
                 src={menuItem.imageUrls[selectedImage]}
                 alt={menuItem.name}
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-150 ease-out"
+                style={{
+                  transform: isZoomed ? 'scale(2)' : 'scale(1)',
+                  transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                }}
                 priority
               />
             </div>
