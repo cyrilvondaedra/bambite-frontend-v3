@@ -10,11 +10,7 @@ export default function VerifyEmailClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const {
-    setUser,
-    guestToken,
-    setGuestUser,
-  } = useUser();
+  const { setUser, setGuestUser } = useUser();
 
   const token = searchParams.get("token");
 
@@ -41,10 +37,7 @@ export default function VerifyEmailClient() {
 
         const userData = res?.data?.user ?? res?.data ?? null;
 
-        if (guestToken) {
-          setGuestUser(res?.data?.user);
-        }
-
+        setGuestUser(res?.data?.user);
         setUser(userData);
 
         toast.success(res.message || "Email verified successfully!");
@@ -59,7 +52,7 @@ export default function VerifyEmailClient() {
         setLoading(false);
       }
     })();
-  }, [token]);
+  }, [token, router, setUser, setGuestUser]);
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">

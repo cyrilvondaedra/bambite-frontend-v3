@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, token } = (await req.json()) as {
+    const { email, guestToken } = (await req.json()) as {
       email?: string;
-      token: string;
+      guestToken: string;
     };
-    console.log("Gtoken", token);
+    console.log("Gtoken", guestToken);
 
     if (!email) {
       return NextResponse.json(
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     const backendBody = {
       email,
-      token
+      guestToken
     };
     console.log("backendBody", backendBody);
 

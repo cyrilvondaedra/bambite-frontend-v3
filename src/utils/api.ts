@@ -3,19 +3,11 @@ export async function fetchWithAuth(
   options: RequestInit = {},
   user: boolean
 ) {
-  const guestToken =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-  console.log("guestToken", guestToken);
-
-  if (!user || guestToken) {
-    console.log("no user work");
-
+  if (!user) {
     return fetch(url, {
       ...options,
       headers: {
         ...(options.headers || {}),
-        ...(guestToken ? { "X-Guest-Token": guestToken } : {}),
       },
     });
   }
@@ -24,11 +16,9 @@ export async function fetchWithAuth(
     ...options,
     credentials: "include",
   });
-  console.log("res", res);
 
   if (res.status === 401 || res.status === 403) {
     const accessToken = localStorage.getItem("accessToken");
-    console.log("access", accessToken);
 
     if (accessToken) {
       res = await fetch(url, {

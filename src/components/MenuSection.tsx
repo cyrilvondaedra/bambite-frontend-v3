@@ -17,7 +17,7 @@ export default function MenuSection() {
       const response = await fetch(
         process.env.NEXT_PUBLIC_BASE_URL + "/products?page=1&limit=4",
       );
-      const data = await response.json();
+      const data = await response.json();      
       setMenuItems(data.data);
     };
     fetchMenuItems();

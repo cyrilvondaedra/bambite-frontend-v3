@@ -5,22 +5,22 @@ import {
   useContext,
   useState,
   useEffect,
+  useMemo,
+  useRef,
+  useCallback,
   type ReactNode,
 } from "react";
-import {
-  CartItemFromBackend,
-  SelectedOptionDisplay,
-  CartItem,
-} from "@/types/api/cart";
-import { useUser } from "./UserContext";
-import { fetchWithAuth } from "@/utils/api";
+import { SelectedOptionDisplay, CartItem } from "@/types/api/cart";
 import { toast } from "sonner";
-import { useRef, useCallback } from "react";
 import { api } from "@/lib/api";
+
+const CART_STORAGE_KEY = "bambite_cart";
+const GUEST_TOKEN_KEY = "guest_token";
 
 interface CartContextType {
   items: CartItem[];
   setItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   updateOptions: (id: string, options: SelectedOptionDisplay) => void;
@@ -30,240 +30,220 @@ interface CartContextType {
   setOpen: (open: boolean) => void;
   totalItems: number;
   totalPrice: number;
-  // fetchCart: () => Promise<void>;
   loading: boolean;
+  guestToken: string | null;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Helper to get cart from localStorage
+const getCartFromStorage = (): CartItem[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+// Helper to save cart to localStorage
+const saveCartToStorage = (items: CartItem[]) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (err) {
+    console.error("Failed to save cart to localStorage:", err);
+  }
+};
+
+// Helper to get guest token
+const getGuestToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(GUEST_TOKEN_KEY);
+};
+
+// Helper to save guest token
+const saveGuestToken = (token: string) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(GUEST_TOKEN_KEY, token);
+};
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
+  // Lazy initialization from localStorage
+  const [items, setItems] = useState<CartItem[]>(() => getCartFromStorage());
   const [open, setOpen] = useState(false);
-  const { user, accessToken, guestToken } = useUser();
   const [loading, setLoading] = useState(false);
+  const [guestToken, setGuestToken] = useState<string | null>(() => getGuestToken());
 
-  // const fetchCart = useCallback(async () => {
-  //   try {
-  //     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
-  //     const rawToken =
-  //       typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-  //     const guestToken =
-  //       rawToken &&
-  //       rawToken.trim() &&
-  //       rawToken !== "undefined" &&
-  //       rawToken !== "null"
-  //         ? rawToken.trim()
-  //         : null;
-
-  //     const url =
-  //       !user && guestToken
-  //         ? `${baseUrl}/cart?guestToken=${encodeURIComponent(guestToken)}`
-  //         : `${baseUrl}/cart`;
-
-  //     const res = await fetchWithAuth(
-  //       url,
-  //       {
-  //         method: "GET",
-  //         headers: { "Content-Type": "application/json" },
-  //       },
-  //       !!user
-  //     );
-
-  //     if (!res.ok) return;
-
-  //     const { data } = await res.json();
-
-  //     const mappedItems: CartItem[] = data.items.map(
-  //       (item: CartItemFromBackend) => ({
-  //         id: item.id,
-  //         productId: item.productId,
-  //         title: item.name,
-  //         description: item.description ?? "",
-  //         price: item.price,
-  //         quantity: item.quantity,
-  //         selectedOptions: item.selectedOptions || null,
-  //         selectedOptionsDisplay: item.selectedOptionsDisplay,
-  //         image: item.imageUrls?.[0] ?? "",
-  //         thaiName: item.thaiName ?? "",
-  //         subtotal: item.subtotal,
-  //       })
-  //     );
-
-  //     setItems(mappedItems);
-  //     setTotalItems(data.totalItems);
-  //     setTotalPrice(data.totalPrice);
-
-  //     // Save guestToken ONLY if backend returns one and we don't already have a valid one
-  //     if (!user && !guestToken && data?.guestToken) {
-  //       localStorage.setItem("token", data.guestToken);
-  //     }
-  //   } catch (err) {
-  //     console.error("Failed to restore cart", err);
-  //   }
-  // }, [user]);
-
-  // useEffect(() => {
-  //   if (authLoading) return;
-
-  //   fetchCart();
-  // }, [user]);
-
-  const fetchCart = async () => {
-    try {
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-      };
-
-      if (accessToken && !guestToken) {
-        headers["Authorization"] = `Bearer ${accessToken}`;
-      }
-      if (!accessToken && guestToken) {
-        headers["X-Guest-Token"] = guestToken;
-      }
-
-      const res = await api("/api/auth/user/cart", {
-        headers,
-      });
-      const mappedItems: CartItem[] = res.data.items.map(
-        (item: CartItemFromBackend) => ({
-          id: item.id,
-          productId: item.productId,
-          title: item.name,
-          description: item.description ?? "",
-          price: item.price,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions || null,
-          selectedOptionsDisplay: item.selectedOptionsDisplay,
-          image: item.imageUrls?.[0] ?? "",
-          thaiName: item.thaiName ?? "",
-          subtotal: item.subtotal,
-        }),
-      );
-      setItems(mappedItems);
-      setTotalItems(res.data.totalItems);
-      setTotalPrice(res.data.totalPrice);
-    } catch {
-      setItems([]);
-    }
-  };
-
-  useEffect(() => {
-    if (accessToken || guestToken) {
-      fetchCart();
-    } else {
-      if (items.length > 0) {
-        setItems([]);
-      }
-    }
-  }, [accessToken, guestToken]);
-
-  const removeItem = async (id: string) => {
-    const prevItems = items;
-
-    setItems((prev) => prev.filter((item) => item.productId !== id));
-
-    try {
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-      };
-
-      if (!accessToken && guestToken) {
-        headers["X-Guest-Token"] = guestToken;
-      }
-
-      const res = await api(`api/auth/user/cart/items/${id}`, {
-        method: "DELETE",
-        headers,
-      });
-
-      console.log("res", res);
-    } catch (err: any) {
-      setItems(prevItems);
-      toast.error(err.message);
-      console.error(err.message);
-    }
-  };
-
+  // Debounce timers for quantity updates
   const timersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  // Cleanup timers on unmount
   useEffect(() => {
     const timers = timersRef.current;
-
     return () => {
       Object.values(timers).forEach(clearTimeout);
     };
   }, []);
 
+  // Build headers with guest token
+  const buildHeaders = useCallback((): HeadersInit => {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (guestToken) {
+      headers["X-Guest-Token"] = guestToken;
+    }
+    return headers;
+  }, [guestToken]);
+
+  // Compute totals from items (no setState needed)
+  const totalItems = useMemo(
+    () => items.reduce((sum, item) => sum + item.quantity, 0),
+    [items]
+  );
+
+  const totalPrice = useMemo(
+    () => items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0),
+    [items]
+  );
+
+  // Save cart to localStorage whenever items change
+  useEffect(() => {
+    saveCartToStorage(items);
+  }, [items]);
+
+  // Add item to cart
+  const addItem = async (newItem: CartItem) => {
+    const prevItems = items;
+
+    // Optimistic update
+    setItems((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) =>
+          item.productId === newItem.productId &&
+          JSON.stringify(item.selectedOptions) ===
+            JSON.stringify(newItem.selectedOptions)
+      );
+
+      if (existingIndex !== -1) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + newItem.quantity,
+        };
+        return updated;
+      }
+
+      const itemWithId = {
+        ...newItem,
+        id: newItem.id || `${newItem.productId}-${Date.now()}`,
+      };
+      return [...prev, itemWithId];
+    });
+
+    toast.success("Item added to cart");
+
+    // Call API
+    try {
+      const payload = {
+        productId: newItem.productId,
+        quantity: newItem.quantity,
+        selectedOptions: newItem.selectedOptions || {},
+      };
+
+      const res = await api("/api/auth/user/cart", {
+        method: "POST",
+        headers: buildHeaders(),
+        body: JSON.stringify(payload),
+      });
+
+      // Save guest token if returned
+      if (res.data?.guestToken && !guestToken) {
+        saveGuestToken(res.data.guestToken);
+        setGuestToken(res.data.guestToken);
+      }
+    } catch (err) {
+      console.error("Failed to sync cart with backend:", err);
+      // Rollback on error
+      setItems(prevItems);
+      toast.error("Failed to add item to cart");
+    }
+  };
+
+  // Remove item from cart
+  const removeItem = async (productId: string) => {
+    const prevItems = items;
+
+    // Optimistic update
+    setItems((prev) => prev.filter((item) => item.productId !== productId));
+    toast.success("Item removed from cart");
+
+    // Call API
+    try {
+      await api(`/api/auth/user/cart/items/${productId}`, {
+        method: "DELETE",
+        headers: buildHeaders(),
+      });
+    } catch (err) {
+      console.error("Failed to remove item from backend:", err);
+      setItems(prevItems);
+      toast.error("Failed to remove item");
+    }
+  };
+
+  // Update quantity with debounce
   const updateQuantity = useCallback(
     (productId: string, quantity: number) => {
       if (quantity < 1) return;
 
-      // 1) update UI immediately
+      // Optimistic update
       setItems((prev) =>
         prev.map((item) =>
-          item.productId === productId ? { ...item, quantity } : item,
-        ),
+          item.productId === productId ? { ...item, quantity } : item
+        )
       );
 
-      // 2) reset timer for this product
+      // Clear existing timer for this product
       if (timersRef.current[productId]) {
         clearTimeout(timersRef.current[productId]);
       }
 
-      // 3) call API after user "chills"
+      // Debounced API call
       timersRef.current[productId] = setTimeout(async () => {
         try {
-          const headers: HeadersInit = {
-            "Content-Type": "application/json",
-          };
-
-          if (!accessToken && guestToken) {
-            headers["X-Guest-Token"] = guestToken;
-          }
-
           await api(`/api/auth/user/cart/${productId}`, {
             method: "PUT",
-            headers,
+            headers: buildHeaders(),
             body: JSON.stringify({ quantity }),
           });
-        } catch (err: any) {
-          toast.error(err.message);
-          fetchCart();
+        } catch (err) {
+          console.error("Failed to update quantity:", err);
+          toast.error("Failed to update quantity");
         }
       }, 800);
     },
-    [accessToken, guestToken],
+    [buildHeaders]
   );
 
-  useEffect(() => {
-    const total = items.reduce((sum, item) => {
-      return sum + Number(item.price) * item.quantity;
-    }, 0);
-
-    setTotalPrice(total);
-  }, [items]);
-
+  // Update options
   const updateOptions = async (
     cartId: string,
-    selectedOptions: SelectedOptionDisplay,
+    selectedOptions: SelectedOptionDisplay
   ) => {
     const prevItems = items;
 
-    // ✅ optimistic UI update
+    // Optimistic update
     setItems((prev) =>
       prev.map((item) => {
         if (item.id !== cartId) return item;
 
-        // 1) update selectedOptions object
         const nextSelectedOptions = {
           ...(item.selectedOptions ?? {}),
           [selectedOptions.id]: selectedOptions.value,
         };
 
-        // 2) update selectedOptionsDisplay list (if you show it in UI)
         const prevDisplay = item.selectedOptionsDisplay ?? [];
         const idx = prevDisplay.findIndex((o) => o.id === selectedOptions.id);
 
@@ -271,7 +251,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           idx === -1
             ? [...prevDisplay, selectedOptions]
             : prevDisplay.map((o) =>
-                o.id === selectedOptions.id ? selectedOptions : o,
+                o.id === selectedOptions.id ? selectedOptions : o
               );
 
         return {
@@ -279,69 +259,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
           selectedOptions: nextSelectedOptions,
           selectedOptionsDisplay: nextDisplay,
         };
-      }),
+      })
     );
 
-    const payload = {
-      selectedOptions: {
-        [selectedOptions.id]: selectedOptions.value,
-      },
-    };
-
+    // Call API
     try {
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
+      const payload = {
+        selectedOptions: {
+          [selectedOptions.id]: selectedOptions.value,
+        },
       };
-
-      if (!accessToken && guestToken) {
-        headers["X-Guest-Token"] = guestToken;
-      }
 
       await api(`/api/auth/user/cart/options/${cartId}`, {
         method: "PATCH",
-        headers,
-        body: JSON.stringify({ ...payload }),
+        headers: buildHeaders(),
+        body: JSON.stringify(payload),
       });
-    } catch (err: any) {
+    } catch (err) {
+      console.error("Failed to update options:", err);
       setItems(prevItems);
-      console.error(err.message);
-      toast.error(err.message);
+      toast.error("Failed to update options");
     }
   };
 
+  // View cart
   const viewCart = () => {
     setOpen(true);
   };
 
+  // Clear cart
   const clearCart = async () => {
     const prevItems = items;
+    setLoading(true);
+    setItems([]);
 
     try {
-      setLoading(true);
-
-      const res = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        !!user,
-      );
-
-      const data =
-        res.headers.get("content-length") !== "0" ? await res.json() : null;
-
-      if (!res.ok) {
-        throw new Error(data?.message || "Failed to delete cart");
-      }
-
-      setItems([]);
-    } catch (err: any) {
+      await api("/api/cart", {
+        method: "DELETE",
+        headers: buildHeaders(),
+      });
+    } catch (err) {
+      console.error("Failed to clear cart:", err);
       setItems(prevItems);
-      console.error(err);
-      toast.error(err.message || "Something went wrong");
+      toast.error("Failed to clear cart");
     } finally {
       setLoading(false);
     }
@@ -352,6 +312,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         setItems,
+        addItem,
         removeItem,
         updateQuantity,
         updateOptions,
@@ -361,8 +322,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setOpen,
         totalItems,
         totalPrice,
-        // fetchCart,
         loading,
+        guestToken,
       }}
     >
       {children}

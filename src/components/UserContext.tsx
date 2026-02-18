@@ -50,20 +50,11 @@ interface UserContextType {
   guestUser: GuestUser | null;
   authLoading: boolean;
   profileLoading: boolean;
-  // fetchUser: () => Promise<boolean>;
   fetchGuestUser: (tokenOverride?: string) => Promise<void>;
   setGuestUser: React.Dispatch<React.SetStateAction<GuestUser | null>>;
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
-  guestToken: string | null;
-  setGuestToken: (token: string | null) => void;
-  //   isLoggedIn: boolean;
-  //   orders: Order[];
-  //   login: (email: string, password: string) => Promise<void>;
-  // logout: () => void;
   updateProfile: (details: Partial<User>) => Promise<void>;
-  //   changePassword: (otpCode: string, newPassword: string) => Promise<void>;
-  //   requestPasswordReset: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -74,14 +65,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [profileLoading, setProfileLoading] = useState(false);
   const [guestUser, setGuestUser] = useState<GuestUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [guestToken, setGuestToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    console.log("guest");
-
-    const token = localStorage.getItem("token");
-    setGuestToken(token);
-  }, []);
 
   const refresh = async () => {
     try {
@@ -126,10 +109,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const headers: HeadersInit = {
         "Content-Type": "application/json",
       };
-
-      if (!accessToken && guestToken) {
-        headers["X-Guest-Token"] = guestToken;
-      }
 
       const res = await api("/api/auth/guest/profile", {
         headers,
@@ -211,21 +190,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUser,
         authLoading,
         profileLoading,
-        // guestUser,
-        // fetchUser,
         guestUser,
         fetchGuestUser,
         setGuestUser,
         accessToken,
         setAccessToken,
-        guestToken,
-        setGuestToken,
-        // isLoggedIn,
-        // orders,
-        // login,
         updateProfile,
-        // changePassword,
-        // requestPasswordReset,
       }}
     >
       {children}

@@ -30,37 +30,49 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const { user, guestToken, guestUser,fetchGuestUser } = useUser();
+  const { user, guestUser } = useUser();
 
-  const { items } = useCart();
+  const { items, guestToken, clearCart } = useCart();
 
+  // Load from session storage on mount
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem("checkout_email");
+    const storedPhone = sessionStorage.getItem("checkout_phone");
+
+    if (storedEmail || storedPhone) {
+      setFormData({
+        email: storedEmail || "",
+        phone: storedPhone || "",
+      });
+    }
+  }, []);
+
+  // Set user data if available (takes priority over session storage)
   useEffect(() => {
     if (user) {
-      setFormData({
-        email: user.email || "",
-        phone: "",
-      });
-      if (guestUser) {
-        setFormData({
-          email: guestUser.email || "",
-          phone: "",
-        });
-      }
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email || prev.email,
+      }));
+    }
+    if (guestUser) {
+      setFormData((prev) => ({
+        ...prev,
+        email: guestUser.email || prev.email,
+      }));
     }
   }, [user, guestUser]);
-
-  useEffect(() => {
-    if (guestToken) {
-      fetchGuestUser();
-    }
-  }, [guestToken]);
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+
+    // Save to session storage
+    sessionStorage.setItem(`checkout_${id}`, value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,33 +106,43 @@ export default function CheckoutPage() {
         toast.info("Add at least 1 item to Cart.");
         return;
       }
-      console.log("payload", payload);
 
-      // const res = await fetch("/api/orders", {
-      //   method: "POST",
-      //   headers: buildAuthHeaders(),
-      //   body: JSON.stringify(payload),
-      //   credentials: user ? "include" : "omit",
-      // });
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
 
-      // const data = await res.json().catch(() => ({}));
+      if (guestToken) {
+        (headers as Record<string, string>)["X-Guest-Token"] = guestToken;
+      }
 
-      // if (!res.ok) {
-      //   if (data?.errors) {
-      //     setErrors({
-      //       email: data.errors.email,
-      //       phone: data.errors.phoneNumber,
-      //     });
-      //     return;
-      //   }
-      //   throw new Error(data?.message || `Checkout failed (${res.status})`);
-      // }
+      const res = await api("/api/orders", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+        credentials: "include",
+      });
 
-      // router.push("/order_success");
-      // clearCart();
-    } catch (err: any) {
+      toast.success(res.message || "Order placed successfully!");
+      clearCart();
+      sessionStorage.removeItem("checkout_email");
+      sessionStorage.removeItem("checkout_phone");
+      localStorage.removeItem("bambite_cart");
+      router.push("/order_success");
+    } catch (err: unknown) {
       console.error(err);
-      toast(err.message || "Checkout failed");
+      const errorMessage =
+        err instanceof Error ? err.message : "Checkout failed";
+
+      // Check if error is about email verification (403)
+      if (
+        errorMessage.toLowerCase().includes("verify your email") ||
+        errorMessage.toLowerCase().includes("verification")
+      ) {
+        setOpen(true);
+        return;
+      }
+
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -149,29 +171,25 @@ export default function CheckoutPage() {
       const res = await api("/api/auth/send-verification-email", {
         method: "POST",
         headers,
-        body: JSON.stringify({ email: formData.email, token: guestToken }),
+        body: JSON.stringify({ email: formData.email, guestToken: guestToken }),
         credentials: "include",
       });
 
       toast.success(res.message || "Verification email sent");
       setOpen(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("verify email error:", error);
-      toast.error(error?.message || "An error occurred. Please try again.");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An error occurred. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const onPlaceOrder = (e: React.MouseEvent) => {
-    // const guestEmailVerified = !!guestUser?.emailVerified;
-    const userEmailVerified = !!user?.emailVerified;
-
-    if (!userEmailVerified) {
-      setOpen(true);
-      return;
-    }
-
     handleSubmit(e as unknown as React.FormEvent);
   };
 

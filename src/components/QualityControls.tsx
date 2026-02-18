@@ -1,23 +1,18 @@
 import { MenuItemWithUserSelections } from "@/types/api/menuItem";
 import { useCart } from "@/components/CartContext";
 import { ShoppingCart } from "lucide-react";
-import { useUser } from "@/components/UserContext";
 import { useState } from "react";
 import { CartItem } from "@/types/api/cart";
-import { api } from "@/lib/api";
-import { toast } from "sonner";
 
 export default function QuantityControls({
   item,
 }: {
   item: MenuItemWithUserSelections;
 }) {
-  const { items, viewCart, setItems } = useCart();
+  const { items, viewCart, addItem } = useCart();
   const cartItem = items.find((i) => i.id === item.id);
   const quantity = cartItem?.quantity || 0;
   const [loading, setLoading] = useState(false);
-
-  const { accessToken, guestToken, setGuestToken } = useUser();
 
   const handleAdd = async () => {
     setLoading(true);
@@ -43,8 +38,8 @@ export default function QuantityControls({
       };
     }
 
-    const optimisticItem: CartItem = {
-      id: `temp-${Date.now()}`, // temporary ID
+    const newCartItem: CartItem = {
+      id: `${item.id}-${Date.now()}`,
       productId: item.id,
       title: item.name,
       description: item.description,
@@ -70,56 +65,10 @@ export default function QuantityControls({
           })
         : null,
     };
-    const prevItems = items;
 
-    setItems((prevItems) => {
-      const existingIndex = prevItems.findIndex(
-        (cartItem) =>
-          cartItem.productId === item.id &&
-          JSON.stringify(cartItem.selectedOptions) ===
-            JSON.stringify(payload.selectedOptions),
-      );
-      if (existingIndex !== -1) {
-        const updated = [...prevItems];
-        updated[existingIndex] = {
-          ...updated[existingIndex],
-          quantity: updated[existingIndex].quantity + payload.quantity,
-          subtotal:
-            (updated[existingIndex].quantity + payload.quantity) *
-            parseFloat(item.price),
-        };
-        return updated;
-      } else {
-        return [...prevItems, optimisticItem];
-      }
-    });
+    // Add to cart using local storage
+    addItem(newCartItem);
     setLoading(false);
-
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    if (!accessToken && guestToken) {
-      headers["X-Guest-Token"] = guestToken; // guestToken is string here
-    }
-
-    try {
-      const res = await api(`/api/auth/user/cart`, {
-        method: "POST",
-        headers,
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      if (!accessToken && !guestToken) {
-        localStorage.setItem("token", res.data.guestToken);
-        setGuestToken(res.data.guestToken);
-      }
-    } catch (err: any) {
-      toast.error(err.message);
-      console.error(err.message);
-      setItems(prevItems);
-    }
   };
 
   return (
