@@ -1,20 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, X, Search, CircleUser } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Menu, X, Search, CircleUser, User, ShoppingBag, Star, Gift, Lock, LogOut } from "lucide-react";
 import CartSheet from "./CartSheet";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { useUser } from "./UserContext";
+import { useCart } from "./CartContext";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function HeaderClient() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { authLoading } = useUser();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const { user, authLoading, setAccessToken, setUser } = useUser();
+  const { setItems } = useCart();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -79,13 +97,109 @@ export default function HeaderClient() {
         >
           <Search className="w-4 h-4 xl:w-5 xl:h-5" />
         </button>
-        {authLoading ? (
-          <div className="h-4 w-4 xl:h-5 xl:w-5 rounded-full secondary_background animate-pulse" />
-        ) : (
-          <Link href="/my_account" className="nav-link transition-colors">
-            <CircleUser className="w-4 h-4 xl:w-5 xl:h-5" />
-          </Link>
-        )}
+        
+        {/* Mobile Profile Dropdown */}
+        <div className="relative" ref={profileDropdownRef}>
+          {authLoading ? (
+            <div className="h-4 w-4 xl:h-5 xl:w-5 rounded-full secondary_background animate-pulse" />
+          ) : (
+            <button
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="nav-link transition-colors p-2"
+              aria-label="Profile menu"
+            >
+              <CircleUser className="w-4 h-4 xl:w-5 xl:h-5" />
+            </button>
+          )}
+          
+          {/* Dropdown Menu */}
+          {isProfileOpen && (
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 rounded-lg primary_background border border_border shadow-lg overflow-hidden z-50">
+              {user ? (
+                <>
+                  <div className="px-4 py-3 border-b border_border">
+                    <p className="text-sm font-medium heading truncate">{user.name || "User"}</p>
+                    <p className="text-xs sub_heading truncate">{user.email}</p>
+                  </div>
+                  <nav className="py-2">
+                    <Link
+                      href="/my_account?tab=profile"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm nav-link hover:secondary_background transition-colors"
+                    >
+                      <User className="w-4 h-4" />
+                      Profile Details
+                    </Link>
+                    <Link
+                      href="/my_account?tab=orders"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm nav-link hover:secondary_background transition-colors"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      Order History
+                    </Link>
+                    <Link
+                      href="/my_account?tab=points"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm nav-link hover:secondary_background transition-colors"
+                    >
+                      <Star className="w-4 h-4" />
+                      Point History
+                    </Link>
+                    <Link
+                      href="/my_account?tab=redeems"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm nav-link hover:secondary_background transition-colors"
+                    >
+                      <Gift className="w-4 h-4" />
+                      Redeem History
+                    </Link>
+                    <Link
+                      href="/my_account?tab=password"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm nav-link hover:secondary_background transition-colors"
+                    >
+                      <Lock className="w-4 h-4" />
+                      Change Password
+                    </Link>
+                  </nav>
+                  <div className="border-t border_border py-2">
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await api(`/api/auth/logout`, { method: "POST" });
+                          toast.success(res.message);
+                        } finally {
+                          setItems([]);
+                          setAccessToken(null);
+                          setUser(null);
+                          setIsProfileOpen(false);
+                          router.push("/");
+                        }
+                      }}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:secondary_background transition-colors w-full"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Log Out
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="py-2">
+                  <Link
+                    href="/my_account"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm nav-link hover:secondary_background transition-colors"
+                  >
+                    <User className="w-4 h-4" />
+                    Sign In / Register
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        
         <CartSheet />
         <button
           className="p-2 nav-link"

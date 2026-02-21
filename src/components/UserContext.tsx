@@ -29,6 +29,47 @@ export interface User {
   points?: number | null;
 }
 
+export interface PointHistoryItem {
+  id: string;
+  userId: string;
+  delta: number;
+  type: string;
+  orderId: string | null;
+  redeemedHistoryId: string | null;
+  performedByRole: string;
+  performedById: string;
+  note: string;
+  createdAt: string;
+}
+
+export interface RedeemHistoryItem {
+  id: string;
+  userId: string;
+  rewardId: string;
+  pointsUsed: number;
+  redeemedAt: string;
+  status: string;
+  reward?: {
+    id: string;
+    name: string;
+    description: string;
+  };
+}
+
+export interface PointHistory {
+  items: PointHistoryItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface RedeemHistory {
+  items: RedeemHistoryItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface GuestUser {
   id: string;
   name: string | null;
@@ -55,6 +96,8 @@ interface UserContextType {
   accessToken: string | null;
   setAccessToken: (token: string | null) => void;
   updateProfile: (details: Partial<User>) => Promise<void>;
+  pointHistory: PointHistory | null;
+  redeemHistory: RedeemHistory | null;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -65,6 +108,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [profileLoading, setProfileLoading] = useState(false);
   const [guestUser, setGuestUser] = useState<GuestUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [pointHistory, setPointHistory] = useState<PointHistory | null>(null);
+  const [redeemHistory, setRedeemHistory] = useState<RedeemHistory | null>(null);
 
   const refresh = async () => {
     try {
@@ -93,8 +138,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           },
         });
         setUser(res.data.user);
+        setPointHistory(res.data.pointHistory || null);
+        setRedeemHistory(res.data.redeemHistory || null);
       } catch {
         setUser(null);
+        setPointHistory(null);
+        setRedeemHistory(null);
       } finally {
         setProfileLoading(false);
       }
@@ -196,6 +245,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         accessToken,
         setAccessToken,
         updateProfile,
+        pointHistory,
+        redeemHistory,
       }}
     >
       {children}
