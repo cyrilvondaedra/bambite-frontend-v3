@@ -114,47 +114,62 @@ export default function OrdersSection() {
 
   if (loading) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">Loading orders...</p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Order History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">Loading orders...</p>
+        </div>
       </Card>
     )
   }
 
   if (error) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-red-500 text-lg">{error}</p>
-        <button 
-          onClick={() => setPage(1)}
-          className="mt-4 text-sm text-primary underline"
-        >
-          Try again
-        </button>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Order History</h2>
+        <div className="py-6 text-center">
+          <p className="text-red-500 text-lg">{error}</p>
+          <button 
+            onClick={() => setPage(1)}
+            className="mt-4 text-sm text-primary underline"
+          >
+            Try again
+          </button>
+        </div>
       </Card>
     )
   }
 
   if (!accessToken) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">Please sign in to view your orders</p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Order History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">Please sign in to view your orders</p>
+        </div>
       </Card>
     )
   }
 
   if (orders.length === 0) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">No orders yet</p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Start exploring our menu and place your first order!
-        </p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Order History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">No orders yet</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Start exploring our menu and place your first order!
+          </p>
+        </div>
       </Card>
     )
   }
 
   return (
     <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading">Order History</h2>
+      </Card>
       {orders.map((order) => (
         <Card key={order.id} className="p-6">
           <div className="flex items-start justify-between mb-4">

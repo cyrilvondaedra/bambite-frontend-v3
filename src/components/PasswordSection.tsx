@@ -2,76 +2,104 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Lock } from 'lucide-react'
+import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
+import { useUser } from './UserContext'
+import { api } from '@/lib/api'
+import { toast } from 'sonner'
 
-type Step = 'initial' | 'otp' | 'success'
+type Step = 'request' | 'reset' | 'success'
 
 export default function PasswordChangeSection() {
-  // const { requestPasswordReset, changePassword } = useUser()
-  const [step, setStep] = useState<Step>('initial')
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
-  const [otpCode, setOtpCode] = useState('')
+  const { user, accessToken } = useUser()
+  const [email, setEmail] = useState(user?.email || '')
+  const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [step, setStep] = useState<Step>('request')
 
-  const handleRequestOtp = async () => {
+  const inputClassName = "w-full px-0 py-3 heading bg-transparent border-b primary_border placeholder:heading focus:outline-none focus:primary_border transition-colors"
+
+  const handleRequestReset = async () => {
+    if (!email.trim()) {
+      toast.error('Please enter your email address')
+      return
+    }
+
     setIsLoading(true)
-    setError('')
-    setMessage('')
     try {
-      // await requestPasswordReset()
-      setStep('otp')
-      setMessage('OTP code has been sent to your email. For demo purposes, check the console.')
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      }
+      
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`
+      }
+
+      const res = await api('/api/auth/user/forgot-password', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ email }),
+      })
+
+      toast.success(res.message || 'OTP sent to your email')
+      setStep('reset')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to request OTP')
+      toast.error(err instanceof Error ? err.message : 'Failed to send OTP')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleChangePassword = async () => {
-    setError('')
-    setMessage('')
-
-    // Validation
-    if (!otpCode.trim()) {
-      setError('Please enter the OTP code')
+  const handleResetPassword = async () => {
+    if (!otp.trim()) {
+      toast.error('Please enter the OTP')
       return
     }
     if (!newPassword.trim()) {
-      setError('Please enter a new password')
+      toast.error('Please enter a new password')
       return
     }
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match')
+      toast.error('Passwords do not match')
       return
     }
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters')
       return
     }
 
     setIsLoading(true)
     try {
-      // await changePassword(otpCode, newPassword)
+      const res = await api('/api/auth/user/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, otp, newPassword }),
+      })
+
+      toast.success(res.message || 'Password reset successfully')
       setStep('success')
-      setMessage('Password changed successfully!')
-      setTimeout(() => {
-        setStep('initial')
-        setOtpCode('')
-        setNewPassword('')
-        setConfirmPassword('')
-        setMessage('')
-      }, 3000)
+      // Clear form
+      setOtp('')
+      setNewPassword('')
+      setConfirmPassword('')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to change password')
+      toast.error(err instanceof Error ? err.message : 'Failed to reset password')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleStartOver = () => {
+    setStep('request')
+    setOtp('')
+    setNewPassword('')
+    setConfirmPassword('')
   }
 
   return (
@@ -81,112 +109,122 @@ export default function PasswordChangeSection() {
         <h2 className="text-2xl font-bold text-foreground">Change Password</h2>
       </div>
 
-      {step === 'initial' && (
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Click the button below to request a password reset. You will receive an OTP code to
-            verify your identity.
+      {step === 'request' && (
+        <div className="space-y-6">
+          <p className="body">
+            Enter your email address and we&apos;ll send you an OTP to reset your password.
           </p>
+
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClassName}
+          />
+
           <Button
-            onClick={handleRequestOtp}
+            onClick={handleRequestReset}
             disabled={isLoading}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            className="w-full primary_btn rounded-3xl"
           >
-            {isLoading ? 'Sending...' : 'Request Password Reset'}
+            {isLoading ? 'Sending...' : 'Send OTP'}
           </Button>
         </div>
       )}
 
-      {step === 'otp' && (
-        <div className="space-y-4">
-          {message && (
-            <div className="p-3 rounded-lg bg-blue-100/20 border border-blue-200 text-blue-700 text-sm">
-              {message}
-            </div>
-          )}
+      {step === 'reset' && (
+        <div className="space-y-6">
+          <button
+            onClick={handleStartOver}
+            className="flex items-center gap-1 text-sm body hover:opacity-80 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
 
-          {error && (
-            <div className="p-3 rounded-lg bg-red-100/20 border border-red-200 text-red-700 text-sm">
-              {error}
-            </div>
-          )}
+          <p className="body">
+            Enter the OTP sent to <span className="font-medium heading">{email}</span> and your new password.
+          </p>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              OTP Code
-            </label>
-            <Input
-              type="text"
-              placeholder="Enter 6-digit code"
-              value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value)}
-              maxLength={6}
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              Check your email or console for the OTP code
-            </p>
-          </div>
+          <input
+            type="text"
+            placeholder="Enter 6-digit OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            maxLength={6}
+            className={inputClassName}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              New Password
-            </label>
-            <Input
-              type="password"
-              placeholder="Enter new password"
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              className={`${inputClassName} pr-10`}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 body hover:opacity-80"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Confirm Password
-            </label>
-            <Input
-              type="password"
-              placeholder="Confirm new password"
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`${inputClassName} pr-10`}
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 body hover:opacity-80"
+            >
+              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              onClick={handleChangePassword}
-              disabled={isLoading}
-              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              {isLoading ? 'Changing...' : 'Change Password'}
-            </Button>
-            <Button
-              onClick={() => {
-                setStep('initial')
-                setOtpCode('')
-                setNewPassword('')
-                setConfirmPassword('')
-                setError('')
-                setMessage('')
-              }}
-              variant="outline"
-            >
-              Cancel
-            </Button>
-          </div>
+          <Button
+            onClick={handleResetPassword}
+            disabled={isLoading}
+            className="w-full primary_btn rounded-3xl"
+          >
+            {isLoading ? 'Resetting...' : 'Reset Password'}
+          </Button>
+
+          <button
+            onClick={handleRequestReset}
+            disabled={isLoading}
+            className="w-full text-sm body hover:opacity-80 transition-colors"
+          >
+            Didn&apos;t receive OTP? Send again
+          </button>
         </div>
       )}
 
       {step === 'success' && (
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-green-100/20 border border-green-200 flex items-center justify-center mx-auto">
-            <span className="text-2xl">✓</span>
+          <div className="w-12 h-12 rounded-full bg-green-100 border border-green-200 flex items-center justify-center mx-auto">
+            <span className="text-2xl text-green-600">✓</span>
           </div>
           <div>
-            <p className="font-medium text-foreground">Password Changed Successfully!</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Your password has been updated. Redirecting...
+            <p className="font-medium heading">Password Reset Successfully!</p>
+            <p className="text-sm body mt-1">
+              Your password has been changed. You can now use your new password to sign in.
             </p>
           </div>
+          <Button
+            onClick={handleStartOver}
+            className="mt-4 primary_btn rounded-3xl"
+          >
+            Done
+          </Button>
         </div>
       )}
     </Card>

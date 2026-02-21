@@ -45,33 +45,45 @@ export default function PointHistorySection() {
 
   if (profileLoading) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">Loading point history...</p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Point History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">Loading point history...</p>
+        </div>
       </Card>
     )
   }
 
   if (!accessToken) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">Please sign in to view your point history</p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Point History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">Please sign in to view your point history</p>
+        </div>
       </Card>
     )
   }
 
   if (!pointHistory || pointHistory.items.length === 0) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">No point history yet</p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Earn points by making purchases!
-        </p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Point History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">No point history yet</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Earn points by making purchases!
+          </p>
+        </div>
       </Card>
     )
   }
 
   return (
     <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading">Point History</h2>
+      </Card>
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-muted-foreground">
           Total: {pointHistory.total} transaction{pointHistory.total !== 1 ? 's' : ''}

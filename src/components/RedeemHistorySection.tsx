@@ -24,34 +24,46 @@ export default function RedeemHistorySection() {
 
   if (profileLoading) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">Loading redeem history...</p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Redeem History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">Loading redeem history...</p>
+        </div>
       </Card>
     )
   }
 
   if (!accessToken) {
     return (
-      <Card className="p-12 text-center">
-        <p className="text-muted-foreground text-lg">Please sign in to view your redeem history</p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Redeem History</h2>
+        <div className="py-6 text-center">
+          <p className="text-muted-foreground text-lg">Please sign in to view your redeem history</p>
+        </div>
       </Card>
     )
   }
 
   if (!redeemHistory || redeemHistory.items.length === 0) {
     return (
-      <Card className="p-12 text-center">
-        <Gift className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <p className="text-muted-foreground text-lg">No rewards redeemed yet</p>
-        <p className="text-sm text-muted-foreground mt-2">
-          Use your points to redeem exciting rewards!
-        </p>
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading mb-6">Redeem History</h2>
+        <div className="py-6 text-center">
+          <Gift className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground text-lg">No rewards redeemed yet</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Use your points to redeem exciting rewards!
+          </p>
+        </div>
       </Card>
     )
   }
 
   return (
     <div className="space-y-4">
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold heading">Redeem History</h2>
+      </Card>
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-muted-foreground">
           Total: {redeemHistory.total} redemption{redeemHistory.total !== 1 ? 's' : ''}
