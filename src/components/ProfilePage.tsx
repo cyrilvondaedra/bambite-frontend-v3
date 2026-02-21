@@ -120,13 +120,6 @@ export default function ProfilePage() {
       {/* Header */}
       <div className="primary_background border-b border_border">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xs uppercase tracking-ultra-wide nav-link transition-colors"
-          >
-            <ArrowLeft size={16} />
-            <span className="">Back to Home</span>
-          </Link>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold heading">My Account</h1>

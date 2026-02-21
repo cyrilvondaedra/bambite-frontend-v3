@@ -11,8 +11,8 @@ import { toast } from 'sonner'
 type Step = 'request' | 'reset' | 'success'
 
 export default function PasswordChangeSection() {
-  const { user, accessToken } = useUser()
-  const [email, setEmail] = useState(user?.email || '')
+  const { accessToken } = useUser()
+  const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
