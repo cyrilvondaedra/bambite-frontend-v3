@@ -57,6 +57,9 @@ export default function Register() {
 
       setIsLoading(true);
 
+      // Get guest token if exists
+      const guestToken = typeof window !== 'undefined' ? localStorage.getItem('guest_token') : null;
+
       const res = await api(`/api/auth/register`, {
         method: "POST",
         headers: {
@@ -68,6 +71,7 @@ export default function Register() {
           email: form.email,
           phoneNumber: form.phoneNumber,
           password: form.password,
+          ...(guestToken && { guestToken }),
         }),
       });
       console.log("res",res);
